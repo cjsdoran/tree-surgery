@@ -1,0 +1,48 @@
+# Tree Surgery: Netlify build and functions settings. Deploy steps are in docs/deploy.md.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Vite 8 needs Node 22.12 or later. Local development uses Node 24.
+  NODE_VERSION = "22"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+  # Prompts are read from disk at runtime and never sent to the browser.
+  included_files = ["prompts/**", "schemas/**", "config/**"]
+
+[dev]
+  command = "npm run dev"
+  targetPort = 5173
+  framework = "#custom"
+
+# Function routes are declared in each function's `config.path` (/api/...).
+
+# Security headers on every response. Everything the app loads comes from its own origin:
+# fonts are self-hosted, there is no analytics, and the model is only reached from functions.
+#   script-src 'unsafe-eval': the schema validator (ajv) compiles its checks at runtime.
+#   worker-src blob: pdf.js may start its worker from a blob URL.
+#   img-src/connect-src blob: the record PDF download and file reading use blob URLs.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-eval'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer"
+    X-Frame-Options = "DENY"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
+    Strict-Transport-Security = "max-age=31536000"
+
+# Hashed build assets never change, so browsers can keep them for a year. The page itself is
+# always checked again, so students get a new version as soon as it is deployed.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache"

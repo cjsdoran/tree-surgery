@@ -1,0 +1,29 @@
+{
+  "_comment": "Case detector rules (PS-18). Chris edits this file; no code change needed. Patterns are JavaScript regular expressions, matched case-insensitively against extracted text with whitespace collapsed to single spaces. A file is blocked if ANY marker matches, OR if the exhibit count reaches exhibitThreshold AND any teachingPhrase appears. Verify the publisher number formats against real case PDFs in the test set before launch.",
+  "version": "1.0",
+  "markers": [
+    { "id": "hbs_name", "label": "Harvard Business School / Publishing", "pattern": "harvard business (school|publishing)" },
+    { "id": "hbs_copyright", "label": "Harvard copyright line", "pattern": "president and fellows of harvard college" },
+    { "id": "hbs_number", "label": "HBS-style case number (eg 9-514-001)", "pattern": "\\b9[-\u2010-\u2013]\\d{3}[-\u2010-\u2013]\\d{3}\\b" },
+    { "id": "hbsp_url", "label": "HBSP website", "pattern": "hbsp\\.harvard\\.edu|hbr\\.org/store" },
+    { "id": "ivey_name", "label": "Ivey Publishing / Business School", "pattern": "ivey (publishing|business school|management services)" },
+    { "id": "ivey_number", "label": "Ivey product number (eg 9B18M123)", "pattern": "\\b9B\\d{2}[A-Z]\\d{3}\\b" },
+    { "id": "case_centre", "label": "The Case Centre", "pattern": "the case centre|thecasecentre\\.org" },
+    { "id": "iimb", "label": "IIM Bangalore", "pattern": "indian institute of management bangalore|\\biim bangalore\\b|\\bIMB ?\\d{3}\\b" },
+    { "id": "acrc", "label": "HKU Asia Case Research Centre", "pattern": "asia case research cent(re|er)" },
+    { "id": "written_by", "label": "Case authorship line", "pattern": "this case was (written|prepared|developed) (by|for)" },
+    { "id": "class_discussion", "label": "Class-discussion disclaimer", "pattern": "(solely |intended )?as (a |the )?basis for class discussion" },
+    { "id": "not_illustrate", "label": "Standard case disclaimer", "pattern": "not intended to (serve as|illustrate)[^.]{0,80}(effective|ineffective|endorsement)" },
+    { "id": "reproduction", "label": "Reproduction prohibited notice", "pattern": "(no part of this publication|reproduction of this (material|case))[^.]{0,120}(permission|prohibited|without)" }
+  ],
+  "chrisCaseTitles": {
+    "_comment": "TODO Chris: replace with the exact title strings that appear on your own cases (Bells, MsBA, China, new case). Each is matched as a literal phrase, case-insensitive. Empty strings are ignored.",
+    "titles": ["", "", "", ""]
+  },
+  "structural": {
+    "exhibitPattern": "\\bexhibit\\s+\\d+\\b",
+    "exhibitThreshold": 3,
+    "teachingPhrases": ["teaching note", "case study", "discussion questions", "assignment questions", "questions for discussion", "learning objectives", "case writer", "case author"]
+  },
+  "blockMessage": "This looks like a published teaching case, which can't go into an AI tool. Upload your client brief or your own notes instead."
+}

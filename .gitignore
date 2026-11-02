@@ -6,3 +6,6 @@ calibration/private/
 pilot/
 test-results/
 playwright-report/
+tests/fixtures/private/
+pilot/in/
+deno.lock

@@ -1,0 +1,91 @@
+{
+  "_comment": "Tree Surgery v1 settings. Model IDs, token limits, openers and email wording live here, not in code. appVersion matches the PRD version and prints on the record.",
+  "appName": "Tree Surgery",
+  "appVersion": "1.0",
+  "firm": "Halden & Rowe",
+  "em": { "name": "Daniel Hart", "title": "Engagement Manager", "signOff": "Daniel" },
+  "courses": ["MGMT 5760", "GBUS 4910"],
+  "footer": "{COURSE} practice tool. Feedback is AI-generated; you remain responsible for your work.",
+  "models": {
+    "keyQuestion": { "model": "claude-opus-5-5", "maxTokens": 900, "effort": "low", "fallbacks": "default" },
+    "readTree": { "model": "claude-opus-5-5", "maxTokens": 1500, "effort": "low", "fallbacks": "default" },
+    "reviewTree": { "model": "claude-opus-5-5", "maxTokens": 2000, "effort": "low", "fallbacks": "default" },
+    "signOff": { "model": "claude-opus-5-5", "maxTokens": 1600, "effort": "low", "fallbacks": "default" }
+  },
+  "_modelsNote": "Thinking is always on for these models and its tokens count against maxTokens. At about 100 tokens a second each call must finish inside functionBudgetSeconds; tune in the pilot (spec §7.1).",
+  "functionBudgetSeconds": 24,
+  "_budgetNote": "Netlify stops this project's functions at about 26-30 seconds (QT D21), so the app's own timeout comes first.",
+  "keepAliveSeconds": 5,
+  "keyQuestionMaxAttempts": 3,
+  "_keyQuestionNote": "Attempts per round. After the last Not OK in a round the student reworks and comes back with a new key question (spec D16).",
+  "treeRevisions": 1,
+  "emailMaxAttempts": 3,
+  "limits": {
+    "contextMaxPages": 10,
+    "contextMaxMB": 10,
+    "pasteMaxWords": 5000,
+    "wordsPerEstimatedPage": 500,
+    "minTotalChars": 200,
+    "nearlyEmptyChars": 20,
+    "maxNearlyEmptyShare": 0.8,
+    "treeMaxPages": 25,
+    "treeMaxMB": 20,
+    "treeMinShapes": 5,
+    "treeImageLongSide": 2000,
+    "treeImageMaxBytes": 3670016,
+    "treeRecordImageLongSide": 1600,
+    "treeShapesMaxChars": 40000,
+    "requestMaxBytes": 1048576,
+    "readTreeMaxBytes": 5242880,
+    "contextMaxChars": 60000,
+    "keyQuestionMaxChars": 400,
+    "subQuestionMaxChars": 300,
+    "subQuestionsMax": 5,
+    "outlineMaxChars": 12000,
+    "emailMaxChars": 4000,
+    "nameMaxChars": 60,
+    "studentIdMaxChars": 20,
+    "clientMaxChars": 60
+  },
+  "emailCheck": {
+    "keyQuestion": { "pointsMin": 1, "pointsMax": 5, "wordsMin": 60, "wordsMax": 170 },
+    "reviewQuestions": { "questionsMin": 3, "questionsMax": 5, "wordsMin": 120, "wordsMax": 250 },
+    "reviewPass": { "pointersMax": 2, "wordsMin": 40, "wordsMax": 200 },
+    "signOff": { "heldPointsMax": 4, "wordsMin": 100, "wordsMax": 250 }
+  },
+  "_emailCheckNote": "Chris set a hard ceiling of 250 words on every email (spec D17).",
+  "openers": {
+    "keyQuestion": "The key question needs rethinking. Send back to me when you have reworked the tree with a new question.",
+    "firstCut": "The first cut needs rethinking. Send back to me when you have reworked it.",
+    "rework": "Good start, but the tree needs some rework. Send back to me for a quick check when done.",
+    "pass": "Well structured tree. Go ahead and use this to develop the workplan.",
+    "signedOff": "Signed off. Use this to develop the workplan.",
+    "notThereYet": "Not there yet. Take what's left to the team session."
+  },
+  "emails": {
+    "briefing": {
+      "subject": "Your issue tree: key question first",
+      "paragraphs": [
+        "Before the team problem-solving session, I want each of you to draft your own issue tree on the key question the team agreed.",
+        "Send me your key question first, with your first-level sub-questions if they carry the target. Once we've agreed it, send me your draft issue tree before the team session: one page, in our template, to four levels below the key question, with the agreed key question at the root.",
+        "Attach the client brief or your notes too, so I can see the client's situation."
+      ]
+    },
+    "keyQuestionOk": {
+      "subject": "Re: your key question",
+      "paragraphs": ["That Key Question will work to structure the tree."]
+    },
+    "unreadable": {
+      "subject": "Re: your issue tree – can't read it",
+      "before": "I can't read the tree you sent.",
+      "after": "Send it to me again as one clear page, in our template.",
+      "reasons": {
+        "blurred": "The page is too blurred to read the boxes.",
+        "several_trees": "There's more than one tree on the page, so I can't tell which is yours.",
+        "not_a_tree": "I can't see an issue tree on that page.",
+        "too_small": "The text is too small to read.",
+        "other": "I can't follow the structure on that page."
+      }
+    }
+  }
+}

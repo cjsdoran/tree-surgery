@@ -1,0 +1,31 @@
+/* Praxis design tokens (placeholder values until Chris supplies the real ones).
+   Change values here only; components use the variables. All text pairs meet WCAG AA. */
+:root {
+  /* Colour */
+  --praxis-navy-900: #0f2440;
+  --praxis-navy-700: #1f3a5f;   /* primary; 11.4:1 on white */
+  --praxis-navy-100: #e6ecf3;
+  --praxis-grey-900: #1f2933;   /* body text */
+  --praxis-grey-700: #47515c;   /* muted text; 8.0:1 on white */
+  --praxis-grey-300: #c4cbd3;   /* borders */
+  --praxis-grey-100: #f3f5f7;   /* panels */
+  --praxis-white: #ffffff;
+  --praxis-accent-700: #9a4a00; /* single status accent; 6.1:1 on white */
+  --praxis-accent-100: #fdf1e3;
+  --praxis-focus: #1f6feb;
+
+  /* Type */
+  --praxis-font-sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --praxis-font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  --praxis-text-sm: 0.875rem;
+  --praxis-text-md: 1rem;
+  --praxis-text-lg: 1.25rem;
+
+  /* Space and shape */
+  --praxis-space-1: 0.25rem;
+  --praxis-space-2: 0.5rem;
+  --praxis-space-3: 0.75rem;
+  --praxis-space-4: 1rem;
+  --praxis-space-6: 1.5rem;
+  --praxis-radius: 4px;
+}
