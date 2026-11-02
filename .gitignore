@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+.netlify/
+calibration/private/
+pilot/
+test-results/
+playwright-report/

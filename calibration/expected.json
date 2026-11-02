@@ -1,0 +1,122 @@
+{
+  "_comment": "Chris's verdicts on the nine PEIP calibration trees (2 Nov 2026), for scripts/pilot-run.mjs. Trees are in calibration/private/trees/ (git-ignored: student work). Outlines are Claude's transcriptions, the reference for the read test. 'page' is the 1-based page or slide holding the tree. 'subQuestions' are pasted in Stage 1 only where the team's target sits at level 1. 'mustCatch' points should appear in the Stage 2 email; 'mustNot' must not. Stage 2 points for trees that fail Stage 1 are kept as 'ifStage2' reference only.",
+  "context": "calibration/context/peip-student-notes.md",
+  "trees": [
+    {
+      "id": "good",
+      "file": "calibration/private/trees/good.pptx",
+      "page": 1,
+      "keyQuestion": "How can PEIP achieve sustainable cashflow of $200k within 18 months?",
+      "subQuestions": [],
+      "stage1": "OK",
+      "stage2": "Pass",
+      "mustCatch": [],
+      "mustNot": [
+        "Treats 'Exit?' (changing businesses) as overlapping the non-jam branch",
+        "Asks for financing or the mortgage to be parked ('sustainable' leaves it out)",
+        "Faults revenue vs cost under jam (fine once jam is isolated)",
+        "Calls the tree too light because long-shot branches are shallow"
+      ]
+    },
+    {
+      "id": "g1",
+      "file": "calibration/private/trees/g1.pdf",
+      "page": 2,
+      "keyQuestion": "How can PEIP avoid going bankrupt again and stabilize cashflow in the next 12 months?",
+      "subQuestions": [],
+      "stage1": "Not OK",
+      "stage1Faults": ["two questions joined by 'and'", "overlap (stable cash flow is how you avoid bankruptcy)", "no measurable target"],
+      "ifStage2": ["cash vs profitability overlap; cash flow is the root", "café is a separate business to park", "unit economics, not production efficiency vs factor cost", "batch-size knock-on", "repeated levers inside organisation", "diagnostic node 'What activities depend on founder'"]
+    },
+    {
+      "id": "g2",
+      "file": "calibration/private/trees/g2.pptx",
+      "page": 1,
+      "keyQuestion": "How can PEIP achieve positive operating cash flow within the next 12 months?",
+      "subQuestions": [],
+      "stage1": "OK",
+      "stage2": "First cut",
+      "mustCatch": [
+        "Cash inflow vs outflow is generic and too interwoven",
+        "The cash cycle branch overlaps inflow and outflow entirely",
+        "Cash control, as stated (accounting, hiring), flows through inflow and outflow"
+      ],
+      "mustNot": ["Lower-level detail (eg quantity of customers)"]
+    },
+    {
+      "id": "g3",
+      "file": "calibration/private/trees/g3.pdf",
+      "page": 2,
+      "keyQuestion": "How can Prince Edward Island Preserve Company maintain liquidity within the next 12 months?",
+      "subQuestions": ["How can we increase cash inflow by 10%?", "How can we decrease cash outflow by 10%?"],
+      "stage1": "OK",
+      "stage2": "First cut",
+      "mustCatch": [
+        "Cash inflow vs outflow is the worst cut",
+        "Generic cut under outflow (labour / cost of sales / overhead)",
+        "Single child under 'decrease cash outflow' (also mislabelled)"
+      ],
+      "alsoExpected": ["Non-core (garden, theatre, kiosk, restaurant) scattered", "Liquidity leaves financing in: no parked branch"],
+      "mustNot": ["Recommends a four-branch channel root"]
+    },
+    {
+      "id": "g4",
+      "file": "calibration/private/trees/g4.pdf",
+      "page": 2,
+      "keyQuestion": "How should MacNaughton generate positive year-round operating cash flow by April 2011?",
+      "subQuestions": [],
+      "stage1": "OK",
+      "stage2": "First cut",
+      "mustCatch": [
+        "Revenue vs cost root is generic",
+        "'Year-round revenue' is ambiguous: total (then 'new' leaves out existing off-season revenue) or the minimum monthly revenue (then 'maximise peak season' doesn't fit)"
+      ],
+      "alsoExpected": ["Café in four places", "Bruce's time filed under costs; hiring raises costs", "Off-season vs peak crosses channels", "Refinancing shouldn't appear (may be held: level 3)"]
+    },
+    {
+      "id": "g5",
+      "file": "calibration/private/trees/g5.pptx",
+      "page": 2,
+      "keyQuestion": "How can PEIP generate $250,000 in positive operating cash flow and sustain it for 4 consecutive quarters?",
+      "subQuestions": [],
+      "stage1": "OK",
+      "stage2": "First cut",
+      "mustCatch": [
+        "Cash in / cash out / timing gap: inflow vs outflow plus an overlapping working-capital branch",
+        "Non-operating one-offs and capex should be absent, not parked (operating cash flow)",
+        "Existing customers vs new channels is mixed; price beside volume (price flows from the customer)"
+      ],
+      "mustNot": ["Suggests parking non-operating cash rather than leaving it out"]
+    },
+    {
+      "id": "g6",
+      "file": "calibration/private/trees/g6.pdf",
+      "page": 1,
+      "keyQuestion": "How can we ensure the long-term financial viability of PEIP?",
+      "subQuestions": [],
+      "stage1": "Not OK",
+      "stage1Faults": ["fluffy: no measurable target or date", "weak words ('ensure viability')"],
+      "ifStage2": ["first split not with the grain, not MECE", "vague verbs 'streamline', 'focus on'", "diagnostic sub-issues", "too light: another level", "$737,000/yr typo"]
+    },
+    {
+      "id": "g7",
+      "file": "calibration/private/trees/g7.pdf",
+      "page": 2,
+      "keyQuestion": "How can PEIP achieve sustainable profitability and long-term growth?",
+      "subQuestions": [],
+      "stage1": "Not OK",
+      "stage1Faults": ["double-barrelled (compress to sustainable cash flow)", "no measurable target or date"],
+      "ifStage2": ["operations branch should be organisation and governance", "'stabilise' needs a C$k target", "gross margin vs capital structure and cash flow: level mismatch or missing opex"]
+    },
+    {
+      "id": "g8",
+      "file": "calibration/private/trees/g8.pdf",
+      "page": 2,
+      "keyQuestion": "How can Bruce service his $685k debt obligation while generating sufficient off-season revenue to maintain year-round solvency?",
+      "subQuestions": [],
+      "stage1": "Not OK",
+      "stage1Faults": ["overlap: servicing the debt needs the revenue", "not double-barrelled: 'while' is a constraint"],
+      "mustNot": ["Calls the key question double-barrelled"]
+    }
+  ]
+}
