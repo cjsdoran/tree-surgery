@@ -80,8 +80,12 @@ export function parseOutline(text) {
     }
     const indent = raw.length - raw.trimStart().length;
     const level = indent < 3 ? 1 : indent < 7 ? 2 : 3 + Math.floor((indent - 7) / 4);
-    const body = raw.trim().replace(/^(\d+(\.\d+)*\.?|-)\s+/, '');
-    nodes.push({ level, text: body });
+    // Square-bracket notes inside a line are the transcriber's, not the student's words; and
+    // "X → a; b" is a node X with leaves a and b (the calibration outlines use both).
+    const body = raw.trim().replace(/^(\d+(\.\d+)*\.?|-)\s+/, '').replace(/\s*\[[^\]]*\]\s*/g, ' ').trim();
+    const [head, leaves] = body.split(/\s+→\s+/);
+    nodes.push({ level, text: head.trim() });
+    if (leaves) for (const leaf of leaves.split(/;\s+/)) if (leaf.trim()) nodes.push({ level: level + 1, text: leaf.trim() });
   }
   return nodes;
 }

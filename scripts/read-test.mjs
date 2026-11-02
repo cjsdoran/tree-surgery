@@ -7,6 +7,8 @@
 //   node scripts/read-test.mjs                 prepare the inputs only (no model calls, no cost)
 //   node scripts/read-test.mjs --yes           real model calls: costs money; run when Chris asks
 //   options: --only g1,good   --runs 3 (RT-2)   --out <dir> (default pilot/out/read-test)
+//   diagnostics, for this run only: --model <id>   --max-tokens N   --budget S (seconds)
+//   node scripts/read-test.mjs --rescore      re-check the readings saved in <out> (no model calls)
 //
 // Needs ANTHROPIC_API_KEY in the environment or in .env. Student trees stay on this machine:
 // pilot/ is git-ignored, and nothing is sent anywhere except the model calls.
@@ -76,6 +78,22 @@ async function readOnce(body) {
   return { ok: false, tries };
 }
 
+/** Re-checks the readings saved in each <id>.md against the reference outlines, at no cost. */
+function rescore(trees, out) {
+  for (const tree of trees) {
+    const file = join(out, `${tree.id}.md`);
+    if (!existsSync(file)) continue;
+    const reference = parseOutline(readFileSync(join('calibration', 'outlines', `${tree.id}.md`), 'utf8'));
+    const readings = [...readFileSync(file, 'utf8').matchAll(/### The reading\s*```\r?\n([\s\S]*?)```/g)].map((m) => parseOutline(m[1]));
+    const results = readings.map((nodes, i) => {
+      const cmp = compareOutlines(reference, nodes);
+      const misses = cmp.misses.map((m) => `    L${m.level} "${m.text}": ${m.problem}${m.found ? ` ("${m.found}")` : ''}`).join('\n');
+      return `run ${i + 1}: ${cmp.ok ? 'PASS' : 'FAIL'} (${cmp.checked - cmp.misses.length}/${cmp.checked})${misses ? `\n${misses}` : ''}`;
+    });
+    console.log(`${tree.id}: ${results.join('; ') || 'no reading saved'}`);
+  }
+}
+
 const csv = (rows) => rows.map((r) => r.map((v) => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
 
 async function main() {
@@ -84,15 +102,20 @@ async function main() {
   const runs = Number(option('--runs', '1'));
   const only = option('--only', '').split(',').filter(Boolean);
   const out = option('--out', join('pilot', 'out', 'read-test'));
+  // Diagnostic overrides: they change this process's copy of the config only, never config/app.json.
+  if (option('--model')) config.models.readTree.model = option('--model');
+  if (option('--max-tokens')) config.models.readTree.maxTokens = Number(option('--max-tokens'));
+  if (option('--budget')) config.functionBudgetSeconds = Number(option('--budget'));
   mkdirSync(out, { recursive: true });
 
   const expected = JSON.parse(readFileSync('calibration/expected.json', 'utf8'));
   const trees = expected.trees.filter((t) => !only.length || only.includes(t.id));
+  if (flag('--rescore')) return rescore(trees, out);
   if (live && !process.env.ANTHROPIC_API_KEY) {
     console.error('ANTHROPIC_API_KEY is not set (environment or .env). Nothing was sent.');
     process.exit(1);
   }
-  console.log(live ? `Read test: ${trees.length} trees × ${runs} run(s), REAL model calls (${config.models.readTree.model}).` : `Dry run: preparing ${trees.length} trees; no model calls.`);
+  console.log(live ? `Read test: ${trees.length} trees × ${runs} run(s), REAL model calls (${config.models.readTree.model}, max ${config.models.readTree.maxTokens} tokens, ${config.functionBudgetSeconds} s budget).` : `Dry run: preparing ${trees.length} trees; no model calls.`);
 
   const summary = [];
   const timings = [['tree', 'run', 'attempt', 'ms', 'outcome', 'inputTokens', 'outputTokens', 'servedBy']];

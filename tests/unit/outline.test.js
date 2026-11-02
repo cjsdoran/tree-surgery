@@ -67,6 +67,17 @@ describe('calibration outlines', () => {
     expect(nodes.filter((n) => n.level === 1).length).toBeGreaterThanOrEqual(2);
   });
 
+  it('drops square-bracket notes and splits "→ a; b" leaves (as in g3.md)', () => {
+    expect(parseOutline('KEY QUESTION (level 0): Root?\n\n1. [subgoal 1] How can we grow?\n   1.1 Sales?   [only child]\n       - Traffic? → Offer A; Offer B')).toEqual([
+      { level: 0, text: 'Root?' },
+      { level: 1, text: 'How can we grow?' },
+      { level: 2, text: 'Sales?' },
+      { level: 3, text: 'Traffic?' },
+      { level: 4, text: 'Offer A' },
+      { level: 4, text: 'Offer B' },
+    ]);
+  });
+
   it('reads good.md level by level', () => {
     const nodes = parseOutline(readFileSync('calibration/outlines/good.md', 'utf8'));
     expect(nodes.slice(0, 5)).toEqual([
