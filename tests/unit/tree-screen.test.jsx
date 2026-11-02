@@ -26,6 +26,9 @@ const handle = (kind, pageCount) => ({
   pages: Array.from({ length: pageCount }, (_, i) => ({ n: i + 1, label: kind === 'pptx' ? `Slide text ${i + 1}` : null })),
 });
 const prepared = (n) => ({ ok: true, tree: { kind: 'pdf', page: n, image: { mediaType: 'image/png', base64: 'iVBO' }, pageText: 'Page' }, record: { mediaType: 'image/jpeg', base64: '/9j/', width: 1600, height: 900 } });
+const REWORK = { verdict: 'rework', email: { subject: 'Re: your tree', opener: 'x', whatWorks: 'y', questions: [], pointers: [], ps: null }, promptVersion: 'stage2-tree-review 1.1', servedBy: 'claude-opus-5-5' };
+// Answers each endpoint: the reading for /api/read-tree, a review for /api/review-tree.
+const route = (reading, review = REWORK) => vi.fn(async (path) => ({ ok: true, result: path === '/api/read-tree' ? reading : review }));
 const READING = { status: 'read', reason: null, rootAsWritten: KQ, rootDiffers: false, notes: [], nodes: [{ level: 0, text: KQ }, { level: 1, text: 'Grow?' }, { level: 1, text: 'Cut?' }], promptVersion: 'read-tree 1.0', servedBy: 'claude-opus-5-5' };
 
 function atTree(deps) {
@@ -60,7 +63,7 @@ describe('panel', () => {
 
 describe('page picker', () => {
   it('T-UP-2: a one-page file is chosen automatically', async () => {
-    const call = vi.fn(async () => ({ ok: true, result: READING }));
+    const call = route(READING);
     const prepare = vi.fn(async (_h, n) => prepared(n));
     atTree({ openFile: async () => ({ ok: true, handle: handle('pdf', 1) }), prepare, thumbnails: async () => [], call });
     await choose();
@@ -70,7 +73,7 @@ describe('page picker', () => {
   });
 
   it('T-UP-3: several PDF pages show thumbnails; Send waits for a choice; the chosen page is sent', async () => {
-    const call = vi.fn(async () => ({ ok: true, result: READING }));
+    const call = route(READING);
     const prepare = vi.fn(async (_h, n) => prepared(n));
     atTree({ openFile: async () => ({ ok: true, handle: handle('pdf', 3) }), prepare, thumbnails: async () => ['data:a', 'data:b', 'data:c'], call });
     await choose();
@@ -117,10 +120,11 @@ describe('refusals', () => {
 
 describe('T-READ-1: a reading', () => {
   it('keeps the reading and the record image, does not show the outline, and stores no full-size image', async () => {
-    const storage = atTree({ openFile: async () => ({ ok: true, handle: handle('pdf', 1) }), prepare: async (_h, n) => prepared(n), call: async () => ({ ok: true, result: READING }) });
+    const storage = atTree({ openFile: async () => ({ ok: true, handle: handle('pdf', 1) }), prepare: async (_h, n) => prepared(n), call: route(READING) });
     await choose();
     await sendTree();
-    expect(screen.getByRole('status').textContent).toBe('Daniel has your tree: tree.pdf, page 1.');
+    // The review follows at once, and the Feedback step opens.
+    expect(screen.getByRole('heading', { name: 'Daniel’s review' })).toBeTruthy();
     expect(screen.queryByText('Grow?')).toBeNull();
     const saved = loadSaved(storage).session;
     expect(saved.trees).toHaveLength(1);
@@ -131,7 +135,7 @@ describe('T-READ-1: a reading', () => {
 
 describe('T-READ-4: an unreadable page', () => {
   it("adds Daniel's email with the reason, offers a fresh upload, and doesn't use up the revision", async () => {
-    const call = vi.fn().mockResolvedValueOnce({ ok: true, result: { status: 'unreadable', reason: 'blurred', nodes: [] } }).mockResolvedValueOnce({ ok: true, result: READING });
+    const call = vi.fn().mockResolvedValueOnce({ ok: true, result: { status: 'unreadable', reason: 'blurred', nodes: [] } }).mockResolvedValueOnce({ ok: true, result: READING }).mockResolvedValueOnce({ ok: true, result: REWORK });
     const storage = atTree({ openFile: async () => ({ ok: true, handle: handle('pdf', 1) }), prepare: async (_h, n) => prepared(n), call });
     await choose();
     await sendTree();

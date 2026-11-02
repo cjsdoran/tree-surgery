@@ -43,6 +43,22 @@ export function unreadableEmail(session, u, i) {
   return { id: `unreadable-${i + 1}`, ...fromDaniel(session), sentAt: u.at, subject: e.subject, paragraphs: [`${e.before} ${reason} ${e.after}`] };
 }
 
+/** Daniel's first review (IT-6) or, later, his sign-off: the model's subject and body (spec §10.5). */
+export function treeReviewEmail(session, entry) {
+  const { email } = entry.review;
+  return {
+    id: `review-${entry.round}`,
+    ...fromDaniel(session),
+    sentAt: entry.review.receivedAt,
+    subject: email.subject,
+    opener: email.opener,
+    paragraphs: [email.whatWorks],
+    numbered: email.questions,
+    bullets: email.pointers,
+    ps: email.ps,
+  };
+}
+
 /** Every email the session has received so far, oldest first. */
 export function inboxEmails(session) {
   const emails = [briefingEmail(session)];
@@ -54,5 +70,6 @@ export function inboxEmails(session) {
   });
   if (kq?.agreed) emails.push(keyQuestionOkEmail(session));
   (session.unreadable ?? []).forEach((u, i) => emails.push(unreadableEmail(session, u, i)));
+  for (const entry of session.trees ?? []) if (entry.review) emails.push(treeReviewEmail(session, entry));
   return emails.sort((a, b) => String(a.sentAt).localeCompare(String(b.sentAt)));
 }

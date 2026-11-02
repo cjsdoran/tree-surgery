@@ -71,3 +71,49 @@ export function checkKeyQuestion(data) {
   }
   return result(errors);
 }
+
+const REVIEW_OPENERS = { first_cut: 'firstCut', rework: 'rework', pass: 'pass' };
+// Question marks outside quotes: Daniel quotes node labels, which are often questions themselves
+// ('What does "Exit?" cover?' is one question).
+const unquoted = (text) => String(text ?? '').replace(/"[^"]*"|“[^”]*”|‘[^’]*’/g, '""');
+const marks = (text) => (unquoted(text).match(/\?/g) ?? []).length;
+
+/**
+ * Stage 2 first review (spec §9.1, D17). The data has passed schemas/tree-review.schema.json.
+ * @returns {{ ok: boolean, errors: string[] }}
+ */
+export function checkTreeReview(data) {
+  const errors = [];
+  const email = data.email;
+  const opener = openerError(email, REVIEW_OPENERS[data.verdict]);
+  if (opener) errors.push(opener);
+  if (sentenceCount(email.whatWorks) > 1) errors.push('whatWorks must be one sentence.');
+  if (email.ps && sentenceCount(email.ps) > 2) errors.push('The P.S. must be one or two sentences.');
+
+  const parts = [email.opener, email.whatWorks, ...email.questions.flatMap((q) => [q.question, q.followUp ?? '']), ...email.pointers, email.ps ?? ''];
+  const words = countWords(parts.join(' '));
+
+  if (data.verdict === 'pass') {
+    const limits = config.emailCheck.reviewPass;
+    if (email.questions.length) errors.push('A Pass has no numbered questions: questions must be [].');
+    if (email.pointers.length > limits.pointersMax) errors.push(`A Pass has at most ${limits.pointersMax} pointers; it has ${email.pointers.length}.`);
+    if (words < limits.wordsMin || words > limits.wordsMax) errors.push(`A Pass email must be ${limits.wordsMin}–${limits.wordsMax} words; it has ${words}.`);
+    return result(errors);
+  }
+
+  const limits = config.emailCheck.reviewQuestions;
+  const n = email.questions.length;
+  if (n < limits.questionsMin || n > limits.questionsMax) {
+    errors.push(`First cut or Rework needs ${limits.questionsMin}–${limits.questionsMax} numbered questions; it has ${n}.`);
+  }
+  email.questions.forEach((q, i) => {
+    const text = q.question.trim();
+    if (marks(text) !== 1 || !/\?["'”’)]*$/.test(text)) errors.push(`Question ${i + 1} must be one question, ending with its only question mark.`);
+    if (q.followUp && marks(q.followUp) > 1) errors.push(`Question ${i + 1}'s follow-up must ask at most one question.`);
+  });
+  if (email.pointers.length) errors.push('First cut or Rework has no pointers: pointers must be [].');
+  if (words < limits.wordsMin || words > limits.wordsMax) {
+    errors.push(`The email must be ${limits.wordsMin}–${limits.wordsMax} words; it has ${words}. Aim for about 200.`);
+  }
+  return result(errors);
+}

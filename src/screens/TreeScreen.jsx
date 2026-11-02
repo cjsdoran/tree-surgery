@@ -6,6 +6,7 @@ import { inboxEmails } from '../emails.js';
 import { loadPdfjs } from '../extract/loadPdfjs.js';
 import { closeTree, openTreeFile, prepareTreePage } from '../tree/treeUpload.js';
 import { readTree } from '../tree/readTree.js';
+import { afterReview, reviewTree } from '../tree/reviewTree.js';
 import { useElapsed } from './KeyQuestionScreen.jsx';
 
 /* global __TREE_TEMPLATE__ */
@@ -18,18 +19,31 @@ const defaultDeps = {
   thumbnails: async (handle) => (await import('../tree/browserCanvas.js')).pdfThumbnails(handle),
 };
 
+// What follows a reading: for the first tree, Daniel's review (IT-6, spec §7). Each returns the
+// session changes to make, or a failure. The revision's sign-off is added in milestone 6.
+export const RESPONSES = {
+  first: {
+    waiting: 'Daniel is reviewing your tree…',
+    async run(session, entry, call) {
+      const r = await reviewTree(session, entry, { call });
+      return r.ok ? { ok: true, patch: (s) => afterReview(s, r.review) } : r;
+    },
+  },
+};
+
 // Step 5 (IT-2, IT-4, IT-5, spec §6), and step 7 for the revision (IT-7): upload one PDF or .pptx,
-// pick the page with the tree, and Daniel reads it. No correction step. An unreadable page gets
-// Daniel's email and a fresh upload; it doesn't use up the revision.
-export function TreeScreen({ session, updateSession, round = 'first', deps = {}, onRead = () => {} }) {
+// pick the page with the tree, Daniel reads it, then replies. No correction step. An unreadable
+// page gets Daniel's email and a fresh upload; it doesn't use up the revision.
+export function TreeScreen({ session, updateSession, round = 'first', deps = {} }) {
   const { openFile, prepare, thumbnails, call } = { ...defaultDeps, ...deps };
+  const response = RESPONSES[round];
   const [handle, setHandle] = useState(null);
   const [thumbs, setThumbs] = useState([]);
   const [page, setPage] = useState(null);
   const [busy, setBusy] = useState(null);
   const [error, setError] = useState(null);
   const handleRef = useRef(null);
-  const elapsed = useElapsed(busy === 'reading');
+  const elapsed = useElapsed(busy === 'reading' || busy === 'responding');
 
   useEffect(() => () => { closeTree(handleRef.current); }, []);
 
@@ -103,14 +117,36 @@ export function TreeScreen({ session, updateSession, round = 'first', deps = {},
     }
     updateSession((s) => ({ trees: [...(s.trees ?? []).filter((t) => t.round !== round), r.entry] }), { immediate: true });
     reset();
-    onRead(r.entry);
+    await respond({ ...session, trees: [...(session.trees ?? []).filter((t) => t.round !== round), r.entry] }, r.entry);
+  }
+
+  // Daniel's reply to a tree he has read. A failure leaves the reading in place, so asking again
+  // reruns only the reply.
+  async function respond(latest, readEntry) {
+    if (!response) return;
+    setError(null);
+    setBusy('responding');
+    const r = await response.run(latest, readEntry, call);
+    setBusy(null);
+    if (!r.ok) {
+      setError(withCode(r.message, r.code));
+      return;
+    }
+    updateSession(r.patch, { immediate: true });
   }
 
   if (entry) {
     return (
       <section className="step-form" aria-labelledby="tree-heading">
         <h2 id="tree-heading">{round === 'first' ? 'Your issue tree' : 'Your revised tree'}</h2>
-        <p className="notice" role="status">Daniel has your tree: {entry.fileName}, {entry.kind === 'pptx' ? 'slide' : 'page'} {entry.page}.</p>
+        <p className="notice">Daniel has your tree: {entry.fileName}, {entry.kind === 'pptx' ? 'slide' : 'page'} {entry.page}.</p>
+        {error && <div className="error-summary" role="alert"><p><strong>Error:</strong> {error}</p></div>}
+        <p className="status" role="status" aria-live="polite">{busy === 'responding' ? `${response.waiting} ${elapsed} s` : ''}</p>
+        {response && !busy && (
+          <div className="actions">
+            <button type="button" className="btn" onClick={() => respond(session, entry)}>Ask Daniel again</button>
+          </div>
+        )}
       </section>
     );
   }

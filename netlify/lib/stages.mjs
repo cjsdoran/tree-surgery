@@ -3,7 +3,7 @@
 // the pilot harness uses `read`, which keeps them for Chris.
 import { emSystemPrompt, taskSystemPrompt } from './prompts.mjs';
 import { checkSchema, parseModelJson } from '../../shared/schemaCheck.js';
-import { checkKeyQuestion } from '../../shared/emailCheck.js';
+import { checkKeyQuestion, checkTreeReview } from '../../shared/emailCheck.js';
 import { checkNodes, nodesFromLines } from '../../shared/outline.js';
 
 const INVALID_JSON = 'Your reply was not a single valid JSON object. Return only the JSON object.';
@@ -122,6 +122,45 @@ export function readTreeStage(body) {
       if (!r.ok) return { type: 'invalid', errors: r.errors };
       const { status, reason, rootAsWritten, rootDiffers, nodes, notes } = r.data;
       return { type: 'result', status, reason, rootAsWritten, rootDiffers, nodes, notes };
+    },
+  };
+}
+
+// ---------- Stage 2: first review (spec §7) ----------
+
+/** Fills Stage 2 email fields a model may leave out when they are empty. */
+export function fillTreeReview(data) {
+  if (!data || typeof data !== 'object' || !data.email || typeof data.email !== 'object') return data;
+  const email = { questions: [], pointers: [], ps: null, ...data.email };
+  email.questions = Array.isArray(email.questions)
+    ? email.questions.map((q) => (q && typeof q === 'object' ? { followUp: null, ...q } : q))
+    : email.questions;
+  return { ...data, email };
+}
+
+/** The user message in the tagged blocks the Stage 2 prompt expects. */
+export function reviewTreeMessage(body) {
+  return [
+    `<key_question>\n${body.keyQuestion.trim()}\n</key_question>`,
+    `<tree_outline>\n${body.outline}\n</tree_outline>`,
+    `<context>\n${body.context.text}\n</context>`,
+  ].join('\n\n') + previousErrorsBlock(body.previousErrors);
+}
+
+export function reviewTreeStage(body) {
+  const prompt = emSystemPrompt('stage2-tree-review');
+  const read = (text) => readReply(text, { schema: 'tree-review', fill: fillTreeReview, check: checkTreeReview });
+  return {
+    call: 'reviewTree',
+    system: prompt.text,
+    content: reviewTreeMessage(body),
+    promptVersion: prompt.version,
+    read,
+    // The browser gets the verdict and the email; the findings and the reasons stay here (TS-5).
+    finish(text) {
+      const r = read(text);
+      if (!r.ok) return { type: 'invalid', errors: r.errors };
+      return { type: 'result', verdict: r.data.verdict, email: r.data.email };
     },
   };
 }

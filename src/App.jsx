@@ -11,6 +11,7 @@ import { SetupScreen } from './screens/SetupScreen.jsx';
 import { ContextScreen } from './screens/ContextScreen.jsx';
 import { KeyQuestionScreen } from './screens/KeyQuestionScreen.jsx';
 import { TreeScreen } from './screens/TreeScreen.jsx';
+import { FeedbackScreen } from './screens/FeedbackScreen.jsx';
 import { NotYetScreen } from './screens/NotYetScreen.jsx';
 import { inboxEmails } from './emails.js';
 import { STEPS } from './steps.js';
@@ -115,6 +116,8 @@ function StepScreen({ session, updateSession, screens }) {
       return <KeyQuestionScreen {...props} call={screens.call} />;
     case 'tree':
       return <TreeScreen {...props} round="first" deps={screens.tree} />;
+    case 'feedback':
+      return <FeedbackScreen {...props} />;
     default:
       return <NotYetScreen step={session.step} />;
   }

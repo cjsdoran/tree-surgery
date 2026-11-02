@@ -179,7 +179,7 @@ L4 from (170,270) to (200,400)             (no connection)
 
 ## 7. Stage 2: first review (IT-6, IT-7)
 
-`POST /api/review-tree` with `{ keyQuestion, subQuestions, outline, rootNote?, context: { text, pageCount }, attempt, previousErrors?, mode, caseId }`. User message:
+`POST /api/review-tree` with `{ keyQuestion, outline, context: { text, pageCount }, attempt, previousErrors?, mode, caseId }`. It follows the read at once (the student sees "Daniel is reviewing your tree… N s"); if it fails, the reading is kept and **Ask Daniel again** reruns only the review. The outline is the reading rendered as §10.3, with any transcription notes (a differing root, levels left out under D23). User message:
 
 ```
 <key_question>…</key_question>
@@ -195,7 +195,7 @@ KEY QUESTION (level 0): …
 
 System prompt: `persona.md` + `stage2-tree-review.md` (Output section replaced by the JSON contract, §10.2). The function validates, runs the email check, drops the findings, and returns `{ verdict, email }`.
 
-- Verdicts: `first_cut`, `rework`, `pass`. The email opens with the exact opener from `config/app.json` (`openers.firstCut`, `openers.rework`, `openers.pass`).
+- Verdicts: `first_cut`, `rework`, `pass`. (The calibrated prompt's Part A also listed "Key question"; that verdict belongs to Stage 1, so the review's JSON contract has the three of Step 3.) The email opens with the exact opener from `config/app.json` (`openers.firstCut`, `openers.rework`, `openers.pass`).
 - **Pass:** the run ends; the Record step opens and the run locks (IT-7, IT-9).
 - **First cut or Rework:** the Revision step opens: "Revise your tree and upload it once more. Daniel will sign it off." (IT-7)
 

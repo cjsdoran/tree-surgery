@@ -182,7 +182,12 @@ describe('functions', () => {
     expect((await readTree(post({}))).status).toBe(400);
   });
 
-  it.each(['review-tree', 'sign-off'])('/api/%s is guarded (401) and not built yet (501)', async (name) => {
+  it('/api/review-tree is guarded (401) and needs a key question, outline, context and attempt (400)', async () => {
+    expect((await reviewTree(post({}, { code: 'nope' }))).status).toBe(401);
+    expect((await reviewTree(post({}))).status).toBe(400);
+  });
+
+  it.each(['sign-off'])('/api/%s is guarded (401) and not built yet (501)', async (name) => {
     const fn = MODEL_FUNCTIONS[name];
     expect((await fn(post({}, { code: 'nope' }))).status).toBe(401);
     const res = await fn(post({}));

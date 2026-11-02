@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tree-review.schema.json",
+  "title": "Stage 2: Daniel's first review of the tree (spec §10.2)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["keyQuestionCheck", "verdict", "verdictReason", "findings", "email"],
+  "properties": {
+    "keyQuestionCheck": { "type": "string" },
+    "verdict": { "enum": ["first_cut", "rework", "pass"] },
+    "verdictReason": { "type": "string" },
+    "findings": {
+      "description": "Part A, internal: never sent to the browser (TS-5).",
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["n", "level", "test", "finding", "inEmail"],
+        "properties": {
+          "n": { "type": "integer" },
+          "level": { "type": ["string", "integer"] },
+          "test": { "type": "string" },
+          "finding": { "type": "string" },
+          "inEmail": { "type": "boolean" }
+        }
+      }
+    },
+    "email": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subject", "opener", "whatWorks", "questions", "pointers", "ps"],
+      "properties": {
+        "subject": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "opener": { "type": "string", "minLength": 1 },
+        "whatWorks": { "type": "string", "minLength": 1 },
+        "questions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["question", "followUp"],
+            "properties": {
+              "question": { "type": "string", "minLength": 1 },
+              "followUp": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "pointers": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "ps": { "type": ["string", "null"] }
+      }
+    }
+  }
+}
