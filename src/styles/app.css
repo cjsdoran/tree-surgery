@@ -173,3 +173,12 @@ body {
 @media (max-width: 720px) {
   .sub-row { grid-template-columns: 1fr; }
 }
+
+/* Tree upload and page picker */
+.page-picker .pages { display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: var(--praxis-space-3); }
+.page-choice { display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: var(--praxis-space-2); row-gap: var(--praxis-space-1); border: 1px solid var(--praxis-grey-300); border-radius: var(--praxis-radius); padding: var(--praxis-space-2); cursor: pointer; font-weight: 400; }
+.page-choice.chosen { border: 3px solid var(--praxis-navy-700); padding: calc(var(--praxis-space-2) - 2px); }
+.page-choice input { width: 1.25rem; height: 1.25rem; margin: 0; }
+.page-choice img, .page-choice .hint { grid-column: 1 / -1; }
+.page-choice img { width: 100%; height: auto; border: 1px solid var(--praxis-grey-300); background: var(--praxis-white); }
+.page-label { font-weight: 600; }

@@ -24,7 +24,7 @@ export function validateKeyQuestion({ keyQuestion, subQuestions }) {
   return errors;
 }
 
-function useElapsed(running) {
+export function useElapsed(running) {
   const [seconds, setSeconds] = useState(0);
   useEffect(() => {
     if (!running) return undefined;

@@ -2,9 +2,11 @@
 // anything goes back to the browser (spec §9); each stage adds its schema here as it lands.
 import Ajv2020 from 'ajv/dist/2020.js';
 import keyQuestionSchema from '../schemas/key-question.schema.json' with { type: 'json' };
+import readTreeSchema from '../schemas/read-tree.schema.json' with { type: 'json' };
 
 const SCHEMAS = {
   'key-question': keyQuestionSchema,
+  'read-tree': readTreeSchema,
 };
 
 const ajv = new Ajv2020({ allErrors: true, strict: false });

@@ -123,7 +123,7 @@ Checks in order, in the browser (reusing QT's `processFile` steps where they app
 2. **Size.** `treeMaxMB` 20 MB (TS-U03).
 3. **Open.** pdf.js legacy build (QT D18) or jszip. Password-protected PDF: TS-U08. Other failures: TS-U07 with the error name.
 4. **Page cap.** `treeMaxPages` 25 (TS-U04).
-5. **Picker.** One page or slide: chosen automatically. Several: a grid of choices. PDF: a thumbnail of each page (rendered at 200 px wide) with its number. .pptx: the slide number and its first 80 characters of text (no thumbnails, assumption 5). Default selection: none; **Use this page** is disabled until one is chosen.
+5. **Picker.** One page or slide: chosen automatically. Several: a grid of radio choices. PDF: a thumbnail of each page with its number. .pptx: the slide number and its first 80 characters of text (no thumbnails, assumption 5). Default selection: none; **Send to Daniel** is disabled until one is chosen (one button: the chosen page is prepared, checked and sent).
 6. **Something to read** (replaces the readable-text rule, TS-9): a PDF page always passes (it is read as an image; a scan is allowed). A .pptx slide must yield at least `treeMinShapes` (5) text shapes, or a SmartArt diagram, or a single embedded PNG/JPEG picture (§6.4); otherwise TS-U09: "We couldn't find a tree on slide N. Check you picked the right slide, or export the slide to PDF and upload that."
 7. **Case detector** on the slide text (.pptx) or the page's text layer (PDF, if any), as for the context (TS-U06).
 8. **PDF text layer** (D19): the chosen page's text items, if any, are kept with their positions for the read call (§6.3).
@@ -290,12 +290,12 @@ JSON Schema 2020-12, validated with ajv in the functions (and in the tests). The
   "reason": "blurred | several_trees | not_a_tree | too_small | other | null",
   "rootAsWritten": "string|null",
   "rootDiffers": "boolean",
-  "nodes": [{ "level": 0, "text": "string exactly as written" }],
+  "outline": "one node per line: \"<level> <text exactly as written>\"",
   "notes": ["string (transcription notes, eg illegible word)"]
 }
 ```
 
-Nodes are in reading order (depth first). The first node is level 0; each next node's level is at most one deeper than the one before (checked in code, not only by schema). Illegible words are written as `[illegible]`. The app renders the outline in the calibration format (`KEY QUESTION (level 0): …`, `1.`, `1.1`, then `-` bullets indented by level), which the review and sign-off prompts receive.
+The outline is compact lines rather than an array of objects, so a 90-node tree (as `g5`) fits in about half the output tokens (D21). The function parses it into nodes `{ level, text }`, which go to the browser. Nodes are in reading order (depth first). The first node is level 0; each next node's level is at most one deeper than the one before (checked in code, not only by schema). Illegible words are written as `[illegible]`. The app renders the outline in the calibration format (`KEY QUESTION (level 0): …`, `1.`, `1.1`, then `-` bullets indented by level), which the review and sign-off prompts receive.
 
 ### 10.4 `sign-off.schema.json`
 
@@ -398,6 +398,8 @@ An unreadable tree (§6.5) is an in-world email, not an error code.
 | D17 | Chris, 2 Nov 2026 (Q6). Hard ceiling of 250 words on every email, to stay under the 26-second cap (§9.1). |
 | D18 | Chris, 2 Nov 2026 (Q7). A loose, browser-only lock is acceptable; "Start a new run" stays. |
 | D19 | Chris, 2 Nov 2026 (Q8). A PDF page goes to the read call as the image plus its positioned text layer, when it has one (§6.3). |
+| D21 | Build, milestone 4. The read call returns the outline as "<level> <text>" lines and `models.readTree.maxTokens` is 2500, so large trees are not cut short; the read test's timings (RT-3) confirm it fits the budget. |
+| D22 | Build, milestone 4. pdf.js's standard fonts, CMaps and wasm decoders are served from `/pdfjs/` (copied into `dist/` at build), so pages render with non-embedded fonts and CJK text. |
 | D20 | Chris, 2 Nov 2026 (Q10). The sign-off re-finds lower-level points itself; it gets no held findings from the first review. |
 
 ## 15. Questions for Chris

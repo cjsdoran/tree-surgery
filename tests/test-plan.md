@@ -105,7 +105,7 @@ Unit and e2e tests run with every model call mocked (no cost). The read test (RT
 
 | ID | Check | Method | Pass mark |
 | --- | --- | --- | --- |
-| RT-1 | Read accuracy (PRD "Pre-launch read test") | `node scripts/pilot-run.mjs --read-test --yes`: each of the nine trees in `calibration/private/trees/`, page from `expected.json`, through the browser extraction code and `read-tree`. Compare with `calibration/outlines/` | Every level 1 and level 2 node under the right parent, on all nine. Node-by-node misses reported with both versions, since the outline may be the one at fault |
+| RT-1 | Read accuracy (PRD "Pre-launch read test") | `node scripts/read-test.mjs --yes` (without `--yes` it only prepares the inputs, at no cost): each of the nine trees in `calibration/private/trees/`, page from `expected.json`, through the browser extraction code and `read-tree`. Compare with `calibration/outlines/` | Every level 1 and level 2 node under the right parent, on all nine. Node-by-node misses reported with both versions, since the outline may be the one at fault |
 | RT-2 | Stability | RT-1 run three times | Same result each time |
 | RT-3 | Timing | Duration of every read call | All under 24 s |
 

@@ -25,6 +25,7 @@
     "react-dom": "19.3.1"
   },
   "devDependencies": {
+    "@napi-rs/canvas": "1.0.13",
     "@playwright/test": "1.64.0",
     "@testing-library/dom": "10.4.2",
     "@testing-library/react": "16.3.3",

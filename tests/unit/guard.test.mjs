@@ -177,7 +177,12 @@ describe('functions', () => {
     expect((await keyQuestion(post({}))).status).toBe(400);
   });
 
-  it.each(['read-tree', 'review-tree', 'sign-off'])('/api/%s is guarded (401) and not built yet (501)', async (name) => {
+  it('/api/read-tree is guarded (401) and needs a round, key question, tree and attempt (400)', async () => {
+    expect((await readTree(post({}, { code: 'nope' }))).status).toBe(401);
+    expect((await readTree(post({}))).status).toBe(400);
+  });
+
+  it.each(['review-tree', 'sign-off'])('/api/%s is guarded (401) and not built yet (501)', async (name) => {
     const fn = MODEL_FUNCTIONS[name];
     expect((await fn(post({}, { code: 'nope' }))).status).toBe(401);
     const res = await fn(post({}));
@@ -187,7 +192,8 @@ describe('functions', () => {
 
   it('/api/read-tree takes a tree image over 1 MB; the others refuse it', async () => {
     const body = { tree: { kind: 'pdf', image: { mediaType: 'image/png', base64: 'A'.repeat(2 * 1024 * 1024) } } };
-    expect((await readTree(post(body))).status).toBe(501);
+    // Past the size check, so the body checks answer: 400, not 413.
+    expect((await readTree(post(body))).status).toBe(400);
     expect((await reviewTree(post(body))).status).toBe(413);
   });
 });

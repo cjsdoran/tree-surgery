@@ -36,6 +36,13 @@ export function keyQuestionOkEmail(session) {
   return { id: 'kq-ok', ...fromDaniel(session), sentAt: session.keyQuestion.agreed.at, subject, paragraphs };
 }
 
+/** Daniel's in-world reply when a tree page can't be read (TS-12, spec §6.5). */
+export function unreadableEmail(session, u, i) {
+  const e = config.emails.unreadable;
+  const reason = e.reasons[u.reason] ?? e.reasons.other;
+  return { id: `unreadable-${i + 1}`, ...fromDaniel(session), sentAt: u.at, subject: e.subject, paragraphs: [`${e.before} ${reason} ${e.after}`] };
+}
+
 /** Every email the session has received so far, oldest first. */
 export function inboxEmails(session) {
   const emails = [briefingEmail(session)];
@@ -46,5 +53,6 @@ export function inboxEmails(session) {
     });
   });
   if (kq?.agreed) emails.push(keyQuestionOkEmail(session));
-  return emails;
+  (session.unreadable ?? []).forEach((u, i) => emails.push(unreadableEmail(session, u, i)));
+  return emails.sort((a, b) => String(a.sentAt).localeCompare(String(b.sentAt)));
 }

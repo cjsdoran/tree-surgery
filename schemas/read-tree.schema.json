@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "read-tree.schema.json",
+  "title": "Reading of an uploaded tree (spec §10.3)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "reason",
+    "rootAsWritten",
+    "rootDiffers",
+    "outline",
+    "notes"
+  ],
+  "properties": {
+    "status": {
+      "enum": [
+        "read",
+        "unreadable"
+      ]
+    },
+    "reason": {
+      "enum": [
+        null,
+        "blurred",
+        "several_trees",
+        "not_a_tree",
+        "too_small",
+        "other"
+      ]
+    },
+    "rootAsWritten": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "rootDiffers": {
+      "type": "boolean"
+    },
+    "outline": {
+      "type": "string",
+      "maxLength": 24000,
+      "description": "One node per line: level, a space, the text (spec §10.3)."
+    },
+    "notes": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "string",
+        "maxLength": 300
+      }
+    }
+  }
+}
