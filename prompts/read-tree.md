@@ -1,8 +1,8 @@
-<!-- version: 1.0 · Tree Surgery, reading the uploaded tree into an outline (IT-5, spec §6.5). Written in the build, 2 Nov 2026; checked by the pre-launch read test. Not in Daniel's voice: no persona (spec D10). -->
+<!-- version: 1.1 · Tree Surgery, reading the uploaded tree into an outline (IT-5, spec §6.5). Written in the build, 2 Nov 2026; checked by the pre-launch read test. Not in Daniel's voice: no persona (spec D10). v1.1: large trees leave out the bottom level (Chris, 2 Nov 2026). -->
 
 # Tree Surgery — reading an issue tree
 
-Version: v1.0 (2 Nov 2026)
+Version: v1.1 (2 Nov 2026)
 
 ## Your job
 
@@ -23,6 +23,17 @@ You transcribe one issue tree from a student's slide or page into an indented ou
 - **Order**: list siblings top to bottom (left-to-right tree) or left to right (top-down tree), and list each node's whole branch before its next sibling (depth first).
 - **Not nodes**: slide titles, headers, footers, page numbers, source lines, legends and notes about the tree ("Split by channel", "MECE check") are not boxes in the tree. Leave them out, and mention any note that seems to be about the tree in `notes`.
 - **Exact text**: copy each node's text as written, including question marks, capitals, abbreviations and typos. If a word can't be read, write `[illegible]` in its place. Join lines within one box with single spaces.
+
+## Large trees: leave out the bottom level
+
+The reading must be quick, so a very large tree is cut short from the bottom. Count the boxes in the tree before you write the outline.
+
+- If the tree has **more than 60 boxes**, leave out every box at its deepest level (eg all level 5 boxes, if the deepest boxes are at level 5).
+- If it still has more than 60 boxes, leave out the next level up as well. Never leave out levels 0 to 3.
+- For each level you leave out, add a note: "Level N left out (K boxes) to keep the reading short."
+- Leave out whole levels only. Everything you do include is transcribed exactly, as above.
+
+If `<previous_errors>` says your last reply was cut off, leave out the bottom level now, even if the tree has 60 boxes or fewer.
 
 ## When the page can't be read
 

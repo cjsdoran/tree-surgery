@@ -398,7 +398,8 @@ An unreadable tree (§6.5) is an in-world email, not an error code.
 | D17 | Chris, 2 Nov 2026 (Q6). Hard ceiling of 250 words on every email, to stay under the 26-second cap (§9.1). |
 | D18 | Chris, 2 Nov 2026 (Q7). A loose, browser-only lock is acceptable; "Start a new run" stays. |
 | D19 | Chris, 2 Nov 2026 (Q8). A PDF page goes to the read call as the image plus its positioned text layer, when it has one (§6.3). |
-| D21 | Build, milestone 4. The read call returns the outline as "<level> <text>" lines and `models.readTree.maxTokens` is 2500, so large trees are not cut short; the read test's timings (RT-3) confirm it fits the budget. |
+| D21 | Build, milestone 4. The read call returns the outline as "<level> <text>" lines, about half the output of an array of objects. The token limit is set by D23. |
+| D23 | Chris, 2 Nov 2026, after the read test. Large trees are cut short from the bottom so the read call fits comfortably in about 20 s: the read prompt (v1.1) counts the boxes and, over 60, leaves out the deepest level (and the next if needed, never levels 0–3), with a note per level left out that travels with the outline to the review and the record. `models.readTree.maxTokens` is 2200. A reading still cut off at that limit comes back as a fixable check failure telling the model to leave out the bottom level, and the browser's retry sends it (spec §9 step 5). Read test: 9 of 9 trees placed every level 1–2 node correctly; g3 (about 90 boxes) needed about 2,300–2,600 tokens and was cut off at 2,500 before this rule. |
 | D22 | Build, milestone 4. pdf.js's standard fonts, CMaps and wasm decoders are served from `/pdfjs/` (copied into `dist/` at build), so pages render with non-embedded fonts and CJK text. |
 | D20 | Chris, 2 Nov 2026 (Q10). The sign-off re-finds lower-level points itself; it gets no held findings from the first review. |
 

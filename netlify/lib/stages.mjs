@@ -66,6 +66,10 @@ export function keyQuestionStage(body) {
 
 // ---------- Reading the tree (spec §6.5) ----------
 
+// A reading cut off at max_tokens is retried with this, so the model leaves out the bottom
+// level (prompts/read-tree.md, large trees; Chris, 2 Nov 2026).
+export const READ_CUT_OFF = 'Your last reply was cut off because the tree is too large. Leave out the bottom level of the tree and add the note for it.';
+
 export function fillReadTree(data) {
   if (!data || typeof data !== 'object') return data;
   return { reason: null, rootAsWritten: null, rootDiffers: false, outline: '', notes: [], ...data };
@@ -111,6 +115,7 @@ export function readTreeStage(body) {
     system: prompt.text,
     content: readTreeContent(body),
     promptVersion: prompt.version,
+    truncatedError: READ_CUT_OFF,
     read,
     finish(text) {
       const r = read(text);

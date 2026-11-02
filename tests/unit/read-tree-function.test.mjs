@@ -61,7 +61,7 @@ describe('T-READ-2, T-READ-8: what the model receives', () => {
     expect(params.system[0].text).toBe(loadPrompt('read-tree').text);
     expect(params.system[0].text).not.toContain('Daniel Hart');
     expect(JSON.stringify(params.messages)).not.toContain('CONTEXT');
-    expect(params).toMatchObject({ model: 'claude-opus-5-5', max_tokens: 2500 });
+    expect(params).toMatchObject({ model: 'claude-opus-5-5', max_tokens: 2200 });
   });
 });
 
@@ -71,7 +71,7 @@ describe('what the browser gets', () => {
     expect(await final(pdfBody())).toMatchObject({
       type: 'result', status: 'read', rootAsWritten: KQ, rootDiffers: false, notes: [],
       nodes: [{ level: 0, text: KQ }, { level: 1, text: 'Grow?' }, { level: 2, text: 'New?' }, { level: 1, text: 'Cut?' }],
-      promptVersion: 'read-tree 1.0',
+      promptVersion: 'read-tree 1.1',
     });
   });
 
@@ -113,5 +113,30 @@ describe('request checks', () => {
     reply(READ);
     const r = await final(pptxBody({ tree: { kind: 'pptx', page: 1, image: { mediaType: 'image/jpeg', base64: '/9j/4AAQ' } } }));
     expect(r.type).toBe('result');
+  });
+});
+
+describe('large trees (prompt v1.1, Chris 2 Nov 2026)', () => {
+  it('a reading cut off at max_tokens comes back as invalid, telling the model to leave out the bottom level', async () => {
+    client = fakeClient({ chunks: ['{"status":"read","outline":"0 Root\n1 A'], stopReason: 'max_tokens' });
+    setClientFactoryForTests(() => client);
+    const r = await final(pdfBody());
+    expect(r).toEqual({ type: 'invalid', errors: ['Your last reply was cut off because the tree is too large. Leave out the bottom level of the tree and add the note for it.'] });
+    expect(console.log.mock.calls.map((c) => JSON.parse(c[0])).at(-1)).toMatchObject({ endpoint: 'read-tree', outcome: 'truncated' });
+  });
+
+  it('the prompt carries the 60-box rule and keeps levels 0 to 3', () => {
+    const text = loadPrompt('read-tree').text;
+    expect(text).toContain('more than 60 boxes');
+    expect(text).toContain('Never leave out levels 0 to 3.');
+    expect(loadPrompt('read-tree').version).toBe('1.1');
+  });
+
+  it('a cut-off key question review is still an error, not a retry hint', async () => {
+    const { respondWithModel } = await import('../../netlify/lib/anthropic.mjs');
+    client = fakeClient({ chunks: ['{'], stopReason: 'max_tokens' });
+    setClientFactoryForTests(() => client);
+    const res = await respondWithModel({ call: 'keyQuestion', endpoint: 'key-question', system: 'S', content: 'U', promptVersion: 'v', startedAt: Date.now(), finish: () => ({ type: 'result' }) });
+    expect((await readEvents(res)).at(-1)).toMatchObject({ type: 'error', error: 'truncated' });
   });
 });

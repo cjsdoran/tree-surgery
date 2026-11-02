@@ -112,9 +112,11 @@ export async function callModel({ call, system, content, startedAt = Date.now() 
  * @param {number} p.startedAt when the invocation began, for the time budget
  * @param {number|null} [p.attempt]
  * @param {(text: string) => ({ type: 'result', [k: string]: any } | { type: 'invalid', errors: string[] })} p.finish
+ * @param {string} [p.truncatedError] if set, a reply cut off at max_tokens comes back as invalid with
+ *   this error, so the browser's retry can tell the model what to do (the read call, Chris's rule).
  * @returns {Promise<Response>}
  */
-export async function respondWithModel({ call, endpoint, round = null, system, content, promptVersion, startedAt, attempt = null, finish }) {
+export async function respondWithModel({ call, endpoint, round = null, system, content, promptVersion, startedAt, attempt = null, finish, truncatedError }) {
   const log = (fields) => logCall({ endpoint, round, startedAt, attempt, ...fields });
   if (!process.env.ANTHROPIC_API_KEY) {
     log({ outcome: 'no_api_key', missing: 'ANTHROPIC_API_KEY' });
@@ -140,7 +142,10 @@ export async function respondWithModel({ call, endpoint, round = null, system, c
       let tokens = {};
       try {
         const reply = await callModel({ call, system, content, startedAt });
-        if (!reply.ok) {
+        if (!reply.ok && reply.error === 'truncated' && truncatedError) {
+          outcome = 'truncated';
+          send({ type: 'invalid', errors: [truncatedError] });
+        } else if (!reply.ok) {
           outcome = reply.error;
           const key = reply.error === 'model_error' ? 'modelError' : reply.error;
           send({ type: 'error', error: reply.error, message: MODEL_MESSAGES[key] });

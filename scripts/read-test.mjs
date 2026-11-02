@@ -68,6 +68,8 @@ async function readOnce(body) {
     const ms = Date.now() - startedAt;
     if (!reply.ok) {
       tries.push({ attempt, ms, outcome: reply.error });
+      // As the function does: a cut-off reading is retried with the instruction to cut short.
+      previousErrors = reply.error === 'truncated' && stage.truncatedError ? [stage.truncatedError] : [];
       continue;
     }
     const r = stage.read(reply.text);
