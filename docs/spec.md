@@ -74,7 +74,7 @@ The EM reads the context for the client's situation only (IT-11); the prompts al
 
 ### 5.1 Screen
 
-- **Key question** (required, one text box, 400 characters or fewer).
+- **Your key question** (required, one text box, 400 characters or fewer).
 - **First-level sub-questions** (optional): up to 5 rows, 300 characters each, with "Add a sub-question". Hint: "Add them only if a sub-question carries your number and date."
 - **Send to Daniel** (confirmation not needed). Attempt counter: "Attempt 1 of 3".
 - While waiting: "Daniel is reading your key question…" with elapsed seconds.
@@ -96,7 +96,7 @@ System prompt: `persona.md` + `stage1-key-question.md`. Model output: JSON per `
 
 ### 5.3 Outcomes
 
-- **Not OK:** Daniel's email appears in the inbox and opens in the reading pane. The opener is exactly `openers.keyQuestion`. The screen keeps the student's last text for editing and shows "Attempt 2 of 3".
+- **Not OK:** Daniel's email appears in the inbox and above the form on the key question screen. The opener is exactly `openers.keyQuestion`. The screen keeps the student's last text for editing and shows "Attempt 2 of 3".
 - **OK:** the app adds Daniel's short "agreed" email (TS-8, wording from `config/app.json` `emails.keyQuestionOk`; Chris's wording, D15):
 
   > **Subject:** Re: your key question

@@ -9,6 +9,7 @@ import { StorageWarning } from './components/StorageWarning.jsx';
 import { BriefingScreen } from './screens/BriefingScreen.jsx';
 import { SetupScreen } from './screens/SetupScreen.jsx';
 import { ContextScreen } from './screens/ContextScreen.jsx';
+import { KeyQuestionScreen } from './screens/KeyQuestionScreen.jsx';
 import { NotYetScreen } from './screens/NotYetScreen.jsx';
 import { inboxEmails } from './emails.js';
 import { STEPS } from './steps.js';
@@ -109,6 +110,8 @@ function StepScreen({ session, updateSession, screens }) {
       return <SetupScreen {...props} check={screens.check} />;
     case 'context':
       return <ContextScreen {...props} processFileImpl={screens.processFile} />;
+    case 'key-question':
+      return <KeyQuestionScreen {...props} call={screens.call} />;
     default:
       return <NotYetScreen step={session.step} />;
   }

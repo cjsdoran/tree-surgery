@@ -39,7 +39,7 @@ export function createSession({ now = new Date(), randomBytes } = {}) {
     setup: null,
     context: null,
     // Stage 1: rounds of up to keyQuestionMaxAttempts attempts each, and the agreed question.
-    keyQuestion: { rounds: [], agreed: null },
+    keyQuestion: { rounds: [], agreed: null, draft: { keyQuestion: '', subQuestions: [''] } },
     // Each tree sent: first, then the revision; each with its reading and Daniel's email.
     trees: [],
     // Uploads the read call couldn't read, per round (spec §6.5).

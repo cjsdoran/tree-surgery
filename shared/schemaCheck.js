@@ -1,8 +1,11 @@
 // Validates model output against schemas/ (JSON Schema 2020-12). Functions call this before
 // anything goes back to the browser (spec §9); each stage adds its schema here as it lands.
 import Ajv2020 from 'ajv/dist/2020.js';
+import keyQuestionSchema from '../schemas/key-question.schema.json' with { type: 'json' };
 
-const SCHEMAS = {};
+const SCHEMAS = {
+  'key-question': keyQuestionSchema,
+};
 
 const ajv = new Ajv2020({ allErrors: true, strict: false });
 const validators = Object.fromEntries(Object.entries(SCHEMAS).map(([name, schema]) => [name, ajv.compile(schema)]));

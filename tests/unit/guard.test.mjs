@@ -172,7 +172,12 @@ describe('functions', () => {
     expect((await check(post('', { code: 'nope' }))).status).toBe(401);
   });
 
-  it.each(Object.keys(MODEL_FUNCTIONS))('/api/%s is guarded (401) and not built yet (501)', async (name) => {
+  it('/api/key-question is guarded (401) and needs a key question, context and attempt (400)', async () => {
+    expect((await keyQuestion(post({}, { code: 'nope' }))).status).toBe(401);
+    expect((await keyQuestion(post({}))).status).toBe(400);
+  });
+
+  it.each(['read-tree', 'review-tree', 'sign-off'])('/api/%s is guarded (401) and not built yet (501)', async (name) => {
     const fn = MODEL_FUNCTIONS[name];
     expect((await fn(post({}, { code: 'nope' }))).status).toBe(401);
     const res = await fn(post({}));

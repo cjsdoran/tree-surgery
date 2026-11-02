@@ -30,7 +30,7 @@ describe('createSession', () => {
     expect(s).toMatchObject({ version: 1, mode: 'generic', locked: false, caseId: null, step: 'briefing', startedAt: now.toISOString(), endedAt: null });
     expect(s.attemptId).toMatch(/^[A-Z2-7]{8}$/);
     expect(s.blockedUploads).toEqual([]);
-    expect(s.keyQuestion).toEqual({ rounds: [], agreed: null });
+    expect(s.keyQuestion).toEqual({ rounds: [], agreed: null, draft: { keyQuestion: '', subQuestions: [''] } });
     expect(s.trees).toEqual([]);
   });
 });

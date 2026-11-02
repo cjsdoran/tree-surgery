@@ -161,3 +161,15 @@ body {
 .review-body li { margin: var(--praxis-space-1) 0; }
 .cite { color: var(--praxis-grey-700); font-size: var(--praxis-text-sm); white-space: nowrap; }
 .waiting { border: 1px solid var(--praxis-grey-300); border-radius: var(--praxis-radius); padding: var(--praxis-space-3) var(--praxis-space-4); background: var(--praxis-grey-100); }
+
+/* Key question */
+.verdict { font-size: var(--praxis-text-md); color: var(--praxis-navy-900); }
+.reply { border: 1px solid var(--praxis-grey-300); border-left: 6px solid var(--praxis-navy-700); border-radius: var(--praxis-radius); padding: var(--praxis-space-3) var(--praxis-space-4); margin-bottom: var(--praxis-space-4); }
+.reply .email h3 { margin-top: 0; }
+.sub-questions { border: 1px solid var(--praxis-grey-300); border-radius: var(--praxis-radius); padding: var(--praxis-space-3) var(--praxis-space-4); }
+.sub-row { display: grid; grid-template-columns: 1fr auto; gap: var(--praxis-space-3); align-items: end; }
+.sub-row .field { margin: var(--praxis-space-2) 0; }
+.field input[type='text'] { max-width: 100%; }
+@media (max-width: 720px) {
+  .sub-row { grid-template-columns: 1fr; }
+}

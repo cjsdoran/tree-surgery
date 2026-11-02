@@ -1,25 +1,50 @@
 // Daniel's emails shown in the inbox. The app writes subjects of its own emails, greetings and
 // signatures; the model writes the subject and body of its emails (spec D11). Wording of the
 // app's emails lives in config/app.json.
+//
+// An email: { id, from, sentAt, subject, greeting, opener?, paragraphs, bullets?, numbered?, ps?, signOff }.
+// `opener` is the verdict line, shown first and in bold (spec §10.5).
 import { config, greeting } from '../shared/limits.js';
 
 export const SIGNATURE = `${config.em.name} | ${config.em.title} | ${config.firm}`;
 
+const fromDaniel = (session) => ({ from: config.em.name, greeting: greeting(session.setup?.name), signOff: config.em.signOff });
+
 /** Daniel's briefing (IT-1, spec §2). Greets the student by first name once setup is done. */
 export function briefingEmail(session) {
   const { subject, paragraphs } = config.emails.briefing;
+  return { id: 'briefing', ...fromDaniel(session), sentAt: session.startedAt, subject, paragraphs };
+}
+
+/** Daniel's Stage 1 email on a Not OK key question (spec §5.3). */
+export function keyQuestionEmail(session, attempt, round, number) {
+  const { email } = attempt;
   return {
-    id: 'briefing',
-    from: config.em.name,
-    sentAt: session.startedAt,
-    subject,
-    greeting: greeting(session.setup?.name),
-    paragraphs,
-    signOff: config.em.signOff,
+    id: `kq-${round}-${number}`,
+    ...fromDaniel(session),
+    sentAt: attempt.receivedAt,
+    subject: email.subject,
+    opener: email.opener,
+    paragraphs: email.whatWorks ? [email.whatWorks] : [],
+    bullets: email.points,
   };
 }
 
-/** Every email the session has received so far, oldest first. Later stages add theirs. */
+/** The app's "agreed" email after a Stage 1 OK (TS-8, D15). */
+export function keyQuestionOkEmail(session) {
+  const { subject, paragraphs } = config.emails.keyQuestionOk;
+  return { id: 'kq-ok', ...fromDaniel(session), sentAt: session.keyQuestion.agreed.at, subject, paragraphs };
+}
+
+/** Every email the session has received so far, oldest first. */
 export function inboxEmails(session) {
-  return [briefingEmail(session)];
+  const emails = [briefingEmail(session)];
+  const kq = session.keyQuestion;
+  (kq?.rounds ?? []).forEach((round, r) => {
+    round.attempts.forEach((attempt, a) => {
+      if (attempt.verdict === 'not_ok' && attempt.email) emails.push(keyQuestionEmail(session, attempt, r + 1, a + 1));
+    });
+  });
+  if (kq?.agreed) emails.push(keyQuestionOkEmail(session));
+  return emails;
 }

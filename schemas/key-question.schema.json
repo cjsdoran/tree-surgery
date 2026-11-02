@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "key-question.schema.json",
+  "title": "Stage 1: Daniel's review of the key question (spec §10.1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["verdict", "findings", "email"],
+  "properties": {
+    "verdict": { "enum": ["ok", "not_ok"] },
+    "findings": {
+      "description": "Part A, internal: never sent to the browser (TS-5).",
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["test", "result", "evidence"],
+        "properties": {
+          "test": { "enum": ["smart", "one_question", "no_overlap", "open", "clear_words"] },
+          "result": { "enum": ["pass", "fail"] },
+          "evidence": { "type": "string" }
+        }
+      }
+    },
+    "email": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["subject", "opener", "whatWorks", "points"],
+          "properties": {
+            "subject": { "type": "string", "minLength": 1, "maxLength": 120 },
+            "opener": { "type": "string", "minLength": 1 },
+            "whatWorks": { "type": "string" },
+            "points": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+          }
+        }
+      ]
+    }
+  }
+}
