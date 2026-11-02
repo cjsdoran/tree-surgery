@@ -7,6 +7,8 @@ import { EmailView } from './components/EmailView.jsx';
 import { ResumePrompt } from './components/ResumePrompt.jsx';
 import { StorageWarning } from './components/StorageWarning.jsx';
 import { BriefingScreen } from './screens/BriefingScreen.jsx';
+import { SetupScreen } from './screens/SetupScreen.jsx';
+import { ContextScreen } from './screens/ContextScreen.jsx';
 import { NotYetScreen } from './screens/NotYetScreen.jsx';
 import { inboxEmails } from './emails.js';
 import { STEPS } from './steps.js';
@@ -98,11 +100,15 @@ export default function App({ storage = defaultStorage(), screens = {} }) {
 }
 
 // Each later milestone replaces a NotYetScreen with its step's screen.
-function StepScreen({ session, updateSession }) {
+function StepScreen({ session, updateSession, screens }) {
   const props = { session, updateSession };
   switch (session.step) {
     case 'briefing':
       return <BriefingScreen {...props} />;
+    case 'setup':
+      return <SetupScreen {...props} check={screens.check} />;
+    case 'context':
+      return <ContextScreen {...props} processFileImpl={screens.processFile} />;
     default:
       return <NotYetScreen step={session.step} />;
   }
