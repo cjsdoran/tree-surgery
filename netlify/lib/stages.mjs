@@ -3,7 +3,7 @@
 // the pilot harness uses `read`, which keeps them for Chris.
 import { emSystemPrompt, taskSystemPrompt } from './prompts.mjs';
 import { checkSchema, parseModelJson } from '../../shared/schemaCheck.js';
-import { checkKeyQuestion, checkTreeReview } from '../../shared/emailCheck.js';
+import { checkKeyQuestion, checkTreeReview, splitFollowUp } from '../../shared/emailCheck.js';
 import { checkNodes, nodesFromLines } from '../../shared/outline.js';
 
 const INVALID_JSON = 'Your reply was not a single valid JSON object. Return only the JSON object.';
@@ -128,13 +128,18 @@ export function readTreeStage(body) {
 
 // ---------- Stage 2: first review (spec §7) ----------
 
-/** Fills Stage 2 email fields a model may leave out when they are empty. */
+/**
+ * Tidies a Stage 2 email before the checks: fills fields a model leaves out when empty, moves a
+ * follow-up written into the question into its own field, and drops a "P.S." the model wrote
+ * itself (the app adds it). Found in the first timing run, 3 Nov 2026.
+ */
 export function fillTreeReview(data) {
   if (!data || typeof data !== 'object' || !data.email || typeof data.email !== 'object') return data;
   const email = { questions: [], pointers: [], ps: null, ...data.email };
   email.questions = Array.isArray(email.questions)
-    ? email.questions.map((q) => (q && typeof q === 'object' ? { followUp: null, ...q } : q))
+    ? email.questions.map((q) => (q && typeof q === 'object' && typeof q.question === 'string' ? splitFollowUp({ followUp: null, ...q }) : q))
     : email.questions;
+  if (typeof email.ps === 'string') email.ps = email.ps.replace(/^\s*P\.?\s?S\.?[:\s]*/i, '').trim() || null;
   return { ...data, email };
 }
 

@@ -74,9 +74,25 @@ export function checkKeyQuestion(data) {
 
 const REVIEW_OPENERS = { first_cut: 'firstCut', rework: 'rework', pass: 'pass' };
 // Question marks outside quotes: Daniel quotes node labels, which are often questions themselves
-// ('What does "Exit?" cover?' is one question).
-const unquoted = (text) => String(text ?? '').replace(/"[^"]*"|“[^”]*”|‘[^’]*’/g, '""');
+// ('What does "Exit?" cover?' is one question). Quoted spans are blanked to the same length, so
+// positions still line up. A straight single quote opens a span only after a space or bracket,
+// and closes before a space or punctuation, so apostrophes (PEIP's) are left alone.
+const QUOTED = /"[^"]*"|“[^”]*”|‘[^’]*’|(?<=^|[\s(])'[^']*'(?=$|[\s,.;:!?)])/g;
+export const unquoted = (text) => String(text ?? '').replace(QUOTED, (m) => ' '.repeat(m.length));
 const marks = (text) => (unquoted(text).match(/\?/g) ?? []).length;
+
+/**
+ * "Could X? What does that tell you?" written as one question is a question and its follow-up:
+ * split at the first question mark outside quotes. Anything else is returned as it is.
+ * @returns {{ question: string, followUp: string|null }}
+ */
+export function splitFollowUp(q) {
+  if (q.followUp || marks(q.question) !== 2) return q;
+  const text = q.question.trim();
+  const first = unquoted(text).indexOf('?');
+  const rest = text.slice(first + 1).trim();
+  return rest ? { question: text.slice(0, first + 1).trim(), followUp: rest } : q;
+}
 
 /**
  * Stage 2 first review (spec §9.1, D17). The data has passed schemas/tree-review.schema.json.
