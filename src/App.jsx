@@ -118,6 +118,8 @@ function StepScreen({ session, updateSession, screens }) {
       return <TreeScreen {...props} round="first" deps={screens.tree} />;
     case 'feedback':
       return <FeedbackScreen {...props} />;
+    case 'revision':
+      return <TreeScreen {...props} round="revision" deps={screens.tree} />;
     default:
       return <NotYetScreen step={session.step} />;
   }

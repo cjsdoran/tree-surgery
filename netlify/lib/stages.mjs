@@ -1,9 +1,9 @@
 // The stage cores (spec §9): what each model function sends and how it reads the reply. The
 // functions use `finish`, which strips the internal findings before anything leaves the server;
 // the pilot harness uses `read`, which keeps them for Chris.
-import { emSystemPrompt, taskSystemPrompt } from './prompts.mjs';
+import { emSystemPrompt, signOffSystemPrompt, taskSystemPrompt } from './prompts.mjs';
 import { checkSchema, parseModelJson } from '../../shared/schemaCheck.js';
-import { checkKeyQuestion, checkTreeReview, splitFollowUp } from '../../shared/emailCheck.js';
+import { checkKeyQuestion, checkSignOff, checkTreeReview, splitFollowUp } from '../../shared/emailCheck.js';
 import { checkNodes, nodesFromLines } from '../../shared/outline.js';
 import { seal } from './seal.mjs';
 
@@ -201,6 +201,43 @@ export function reviewEmailStage(body, findings) {
       const r = read(text);
       if (!r.ok) return { type: 'invalid', errors: r.errors };
       return { type: 'result', part: 'email', verdict: r.data.verdict, email: r.data.email };
+    },
+  };
+}
+
+// ---------- Sign-off after the revision (spec §8) ----------
+
+export function fillSignOff(data) {
+  if (!data || typeof data !== 'object' || !data.email || typeof data.email !== 'object') return data;
+  const email = { improved: [], stillFails: [], heldPoints: [], ps: null, ...data.email };
+  if (typeof email.ps === 'string') email.ps = email.ps.replace(/^\s*P\.?\s?S\.?[:\s]*/i, '').trim() || null;
+  return { ...data, email };
+}
+
+/** The user message: both trees, the first review as sent, and the context. No hidden findings. */
+export function signOffMessage(body) {
+  return [
+    `<key_question>\n${body.keyQuestion.trim()}\n</key_question>`,
+    `<first_outline>\n${body.firstOutline}\n</first_outline>`,
+    `<first_review>\nVerdict: ${body.firstVerdict}\n\n${body.firstEmail}\n</first_review>`,
+    `<revised_outline>\n${body.revisedOutline}\n</revised_outline>`,
+    `<context>\n${body.context.text}\n</context>`,
+  ].join('\n\n') + previousErrorsBlock(body.previousErrors);
+}
+
+export function signOffStage(body) {
+  const prompt = signOffSystemPrompt();
+  const read = (text) => readReply(text, { schema: 'sign-off', fill: fillSignOff, check: checkSignOff });
+  return {
+    call: 'signOff',
+    system: prompt.text,
+    content: signOffMessage(body),
+    promptVersion: prompt.version,
+    read,
+    finish(text) {
+      const r = read(text);
+      if (!r.ok) return { type: 'invalid', errors: r.errors };
+      return { type: 'result', verdict: r.data.verdict, email: r.data.email };
     },
   };
 }

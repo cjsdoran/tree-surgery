@@ -133,3 +133,32 @@ export function checkTreeReview(data) {
   }
   return result(errors);
 }
+
+const SIGN_OFF_OPENERS = { signed_off: 'signedOff', not_there_yet: 'notThereYet' };
+
+/**
+ * The sign-off after the revision (spec §9.1, D17). The data has passed schemas/sign-off.schema.json.
+ * @returns {{ ok: boolean, errors: string[] }}
+ */
+export function checkSignOff(data) {
+  const errors = [];
+  const email = data.email;
+  const limits = config.emailCheck.signOff;
+  const opener = openerError(email, SIGN_OFF_OPENERS[data.verdict]);
+  if (opener) errors.push(opener);
+  if (email.improved.length > 3) errors.push(`improved has at most 3 points; it has ${email.improved.length}.`);
+  if (data.verdict === 'signed_off') {
+    if (!email.improved.length) errors.push('Signed off needs at least one point in improved.');
+    if (email.stillFails.length) errors.push('Signed off has nothing in stillFails: stillFails must be [].');
+  } else if (email.stillFails.length < 1 || email.stillFails.length > 4) {
+    errors.push(`Not there yet needs 1–4 points in stillFails; it has ${email.stillFails.length}.`);
+  }
+  if (email.heldPoints.length > limits.heldPointsMax) errors.push(`heldPoints has at most ${limits.heldPointsMax} points; it has ${email.heldPoints.length}.`);
+  if (sentenceCount(email.lesson) > 1) errors.push('lesson must be one sentence.');
+  if (email.ps && sentenceCount(email.ps) > 2) errors.push('The P.S. must be one or two sentences.');
+  const words = countWords([email.opener, ...email.improved, ...email.stillFails, ...email.heldPoints, email.lesson, email.ps ?? ''].join(' '));
+  if (words < limits.wordsMin || words > limits.wordsMax) {
+    errors.push(`The email must be ${limits.wordsMin}–${limits.wordsMax} words; it has ${words}. Aim for about 200.`);
+  }
+  return result(errors);
+}

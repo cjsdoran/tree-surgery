@@ -42,3 +42,32 @@ export function taskSystemPrompt(name) {
   const task = loadPrompt(name);
   return { text: task.text, version: `${name} ${task.version}` };
 }
+
+/**
+ * The text of a prompt between two headings: from the line starting `from` up to (not including)
+ * the line starting `to`. Used to share the calibrated Stage 2 rules word for word.
+ */
+export function promptSection(text, from, to) {
+  const start = text.indexOf(`\n${from}`);
+  const end = to ? text.indexOf(`\n${to}`, start + 1) : text.length;
+  if (start < 0 || end < 0) throw new Error(`Prompt section not found: ${from}`);
+  return text.slice(start + 1, end).trim();
+}
+
+/**
+ * The sign-off's system prompt (spec §8): persona, then prompts/sign-off.md with the Stage 2
+ * rules (Steps 1 and 2, and Never) inserted at {{STAGE2_RULES}}, so both rounds judge alike.
+ */
+export function signOffSystemPrompt() {
+  const persona = loadPrompt('persona');
+  const stage2 = loadPrompt('stage2-tree-review');
+  const task = loadPrompt('sign-off');
+  const rules = [
+    promptSection(stage2.text, '### Step 1', '### Step 3'),
+    promptSection(stage2.text, '### Never', '## Output'),
+  ].join('\n\n');
+  return {
+    text: `${persona.text}\n\n${task.text.replace('{{STAGE2_RULES}}', rules)}`,
+    version: `sign-off ${task.version}; stage2 rules ${stage2.version}; persona ${persona.version}`,
+  };
+}

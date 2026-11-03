@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sign-off.schema.json",
+  "title": "Daniel's sign-off after the revision (spec §10.4)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["verdict", "email"],
+  "properties": {
+    "verdict": { "enum": ["signed_off", "not_there_yet"] },
+    "email": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subject", "opener", "improved", "stillFails", "heldPoints", "lesson", "ps"],
+      "properties": {
+        "subject": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "opener": { "type": "string", "minLength": 1 },
+        "improved": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "stillFails": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "heldPoints": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "lesson": { "type": "string", "minLength": 1 },
+        "ps": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

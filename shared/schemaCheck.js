@@ -5,12 +5,14 @@ import keyQuestionSchema from '../schemas/key-question.schema.json' with { type:
 import readTreeSchema from '../schemas/read-tree.schema.json' with { type: 'json' };
 import treeReviewFindingsSchema from '../schemas/tree-review-findings.schema.json' with { type: 'json' };
 import treeReviewEmailSchema from '../schemas/tree-review-email.schema.json' with { type: 'json' };
+import signOffSchema from '../schemas/sign-off.schema.json' with { type: 'json' };
 
 const SCHEMAS = {
   'key-question': keyQuestionSchema,
   'read-tree': readTreeSchema,
   'tree-review-findings': treeReviewFindingsSchema,
   'tree-review-email': treeReviewEmailSchema,
+  'sign-off': signOffSchema,
 };
 
 const ajv = new Ajv2020({ allErrors: true, strict: false });

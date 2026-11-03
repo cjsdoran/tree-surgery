@@ -187,12 +187,9 @@ describe('functions', () => {
     expect((await reviewTree(post({}))).status).toBe(400);
   });
 
-  it.each(['sign-off'])('/api/%s is guarded (401) and not built yet (501)', async (name) => {
-    const fn = MODEL_FUNCTIONS[name];
-    expect((await fn(post({}, { code: 'nope' }))).status).toBe(401);
-    const res = await fn(post({}));
-    expect(res.status).toBe(501);
-    expect(await res.json()).toEqual({ error: 'not_implemented', message: 'This step is not available yet.' });
+  it('/api/sign-off is guarded (401) and needs both outlines, the first review and context (400)', async () => {
+    expect((await signOff(post({}, { code: 'nope' }))).status).toBe(401);
+    expect((await signOff(post({}))).status).toBe(400);
   });
 
   it('/api/read-tree takes a tree image over 1 MB; the others refuse it', async () => {

@@ -54,10 +54,10 @@ describe('app shell', () => {
 
   it('shows a placeholder for steps not built yet', () => {
     const storage = memoryStorage();
-    saveSession({ ...createSession(), step: 'revision' }, storage);
+    saveSession({ ...createSession(), step: 'record' }, storage);
     render(<App storage={storage} />);
     fireEvent.click(screen.getByRole('button', { name: 'Resume where you left off' }));
-    expect(screen.getByRole('heading', { name: 'Revision' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Record' })).toBeTruthy();
     expect(screen.getByText('This step is not available yet.')).toBeTruthy();
   });
 });
