@@ -1,7 +1,7 @@
 {
   "_comment": "Tree Surgery v1 settings. Model IDs, token limits, openers and email wording live here, not in code. appVersion matches the PRD version and prints on the record.",
   "appName": "Tree Surgery",
-  "appVersion": "1.0",
+  "appVersion": "1.1",
   "firm": "Halden & Rowe",
   "em": { "name": "Daniel Hart", "title": "Engagement Manager", "signOff": "Daniel" },
   "courses": ["MGMT 5760", "GBUS 4910"],

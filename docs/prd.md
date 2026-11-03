@@ -1,6 +1,6 @@
 # PRD — Tree Surgery
 
-2026-10-15 · @Chris Doran
+Nov 3, 2026 · @Chris Doran
 
 ## Summary
 
@@ -11,7 +11,7 @@ Each student pastes the team's key question, and the EM checks it first (Stage 1
 The student learns to break a key question into a tree that is both logically sound and specific to the problem.
 
 | Goal | Why recruiters care |
-|---|---|
+| --- | --- |
 | Decompose a key question into MECE branches | Structuring is the core of every case interview |
 | Split each node on the biggest next decision, with the grain of this problem | Separates thinking from template-filling |
 | Avoid generic trees that are MECE but useless | Firms want problem solvers, not framework reciters |
@@ -30,8 +30,8 @@ The student learns to break a key question into a tree that is both logically so
 In-world: the team has agreed a key question (in Question Time), and the EM wants each team member's draft tree, built on it, before the team problem-solving session.
 
 1. Student enters the access code, name, student ID and course, then uploads or pastes the client context, as in Question Time.
-2. Inbox shows the EM's email: "Send me your key question first. Once we've agreed it, send me your draft issue tree by [deadline], one page, in our template."
-3. Stage 1: the student pastes the key question, with the first-level sub-questions if they carry the target. The EM reviews it. If it isn't OK, the EM's email says why and the student re-enters it (up to 3 attempts).
+2. Inbox shows the EM's email: "Send me your key question first. Once we've agreed it, send me your draft issue tree by \[deadline\], one page, in our template."
+3. Stage 1: the student pastes the key question, with the first-level sub-questions if they carry the target. The EM reviews it. If it isn't OK, the EM's email says why and the student re-enters it (3 attempts a round; after a third, the student reworks it and comes back later with a new one).
 4. The student builds the tree offline in the template, to four levels below the key question, with the agreed key question at the root.
 5. The student uploads the tree as a PDF or PowerPoint file and, if it has several pages, picks the one with the tree. There is no correction step: the EM reviews the tree as read.
 6. Stage 2: the EM's first review arrives, opening with a verdict. A Pass ends the run.
@@ -46,12 +46,15 @@ The key question is agreed before the tree is uploaded, so the tree is never rev
 - **Key question:** pasted as text, with optional first-level sub-questions. The upload opens only once Stage 1 says it is OK.
 - **Template:** Chris's one-page issue tree template, key question on the left, branches to the right, text in boxes, connector lines. Supplied as a PowerPoint file. Top-down trees are read too.
 - **Tree file:** PDF or PowerPoint (.pptx). For a file with several pages or slides, the student picks the one with the tree.
-- **Reading:** the model reads the page (the page image for a PDF; positioned text and connectors for PowerPoint) into an outline, which only the EM sees. There is no correction step.
+- **Reading:** the model reads the page (the page image and its text layer for a PDF; positioned text and connectors for PowerPoint) into an outline, which only the EM sees. There is no correction step.
 - **Unreadable page:** if the tree can't be read (eg a blurred scan, or several trees on one page), the EM says so and the student uploads again. This doesn't use up the revision.
+- **Large trees:** a tree of more than 60 boxes is read without its bottom level (never levels 0 to 3), with a note saying how many boxes were left out, so the reading fits the time limit. The EM sees the note.
 - **Root:** the agreed key question is the root. If the tree's root differs, the EM reviews against the agreed key question and notes the mismatch.
 - **Record:** the EM's reading of each tree is printed as an appendix, so Chris can check reading accuracy in the pilot.
 
 **Pre-launch read test:** the nine calibration trees (PDF and PowerPoint). Every level 1 and level 2 node must be read under the right parent.
+
+**Read test result (3 Nov 2026):** 27 of 27 readings (nine trees, three runs each) placed every level 1 and level 2 node under the right parent. The slowest reading took 17.2 seconds.
 
 ## EM review
 
@@ -64,7 +67,7 @@ The EM tests logic first, then usefulness, and flags any tree that passes logic 
 The EM reviews the key question and its first-level sub-questions before anything else, using the Question Time checklist. It does not critique the tree until the key question is OK, and in Stage 1 it says nothing about the tree's structure: level 1 is read only for the SMART goal. It fails a test only on a material fault, not a technicality.
 
 | Test | Passes when |
-|---|---|
+| --- | --- |
 | SMART | A measurable target and a time frame appear in the key question or a first-level sub-question. A threshold is measured ("positive operating cash flow"); a duration is a time frame ("$250K for 4 consecutive quarters"). A broad key question is fine if a sub-question carries the SMART goal |
 | One question | Not two questions joined by "and". A constraint ("…while…") is not a second question |
 | No overlap | Its parts don't overlap (servicing a debt needs the revenue) |
@@ -73,7 +76,9 @@ The EM reviews the key question and its first-level sub-questions before anythin
 
 **Benchmark (for a later case mode; not in v1, never shown to students):** "How can PEIP avoid going bankrupt ever again?", with "How can PEIP generate $100k operating cash flow in the next 18 months?" (the SMART goal) and "How can PEIP build robust governance and organisation?" (the organisational scope).
 
-**If it isn't OK,** the email opens "The key question needs rethinking. Send back to me when you have reworked the tree with a new question." and covers the key question only. As in Question Time, the EM names each fault plainly and gives the model shape, "How can [Client] achieve [quantified outcome] through [mechanism] by [date]?", but never writes the team's key question.
+**If it isn't OK,** the email opens "The key question needs rethinking. Send back to me when you have reworked the tree with a new question." and covers the key question only. As in Question Time, the EM names each fault plainly and gives the model shape, "How can \[Client\] achieve \[quantified outcome\] through \[mechanism\] by \[date\]?", but never writes the team's key question.
+
+**If it is OK,** the EM replies: "That Key Question will work to structure the tree." **After three attempts that aren't OK,** the student is sent away to rework the key question, with the team if they can, and comes back later with a new one: a new round of three attempts. Rounds are not capped, and every attempt and email goes on the record.
 
 ### Stage 2: tree
 
@@ -82,7 +87,7 @@ Once the key question is OK, the EM reviews the tree against the tests below.
 ### A. Logic
 
 | Test | Question |
-|---|---|
+| --- | --- |
 | Mutually exclusive | Do any siblings overlap? |
 | Collectively exhaustive | Is anything missing at each level? |
 | Answers the parent | Does each level answer the node above it? |
@@ -95,7 +100,7 @@ Once the key question is OK, the EM reviews the tree against the tests below.
 ### B. Useful and specific
 
 | Test | Question |
-|---|---|
+| --- | --- |
 | Transplant | Could the first two splits be moved onto another company unchanged? If so, they are generic, which is a mistake at that level (rule 11). |
 | Next decision (every node) | Does each node split on the biggest decision you'd make next in that branch, so that each child is one option of that decision? |
 | Decision | Would answering each branch change what the client does? |
@@ -106,13 +111,13 @@ Once the key question is OK, the EM reviews the tree against the tests below.
 The next-decision test says where to cut; these symptoms catch cuts that run across the grain. The test behind them: could two analysts work on sibling branches separately, passing at most a short, one-way brief? Apply it at every level, not only the first split.
 
 | Symptom | Signal | EM probe |
-|---|---|---|
+| --- | --- | --- |
 | Knock-on | Pulling a lever in one branch moves a sibling | "If you raise price, what happens to volume?" |
 | Repeated lever | The same action belongs under several branches | "Where else would 'do reading' fit?" |
 | Two-way hand-off | A later stage keeps forcing an earlier one to change | "Would 'attract' ever send 'define' back?" |
 
 | Split type | Positive check | EM probe |
-|---|---|---|
+| --- | --- | --- |
 | Sequential | Each hand-off can be named | "What does 'define' hand to 'attract'?" |
 | Parking branch | Parked in one place, with a trigger to revisit | "What would send you back to this branch?" |
 
@@ -121,7 +126,7 @@ The next-decision test says where to cut; these symptoms catch cuts that run acr
 The first two splits must be unique to the problem (rule 11). Below that, the EM can point students to these cuts.
 
 | Type | Cuts |
-|---|---|
+| --- | --- |
 | Mathematical | Revenue/cost (prefer unit economics, rule 8) · frequency/transaction size · cost per click/conversion rate |
 | Distinctions | Existing/new (product, customer, business…) · supply/demand · quality/quantity · ethical/unethical (a parking branch, rule 2) |
 | Categories | Business · segment · channel · product · country |
@@ -132,7 +137,7 @@ The first two splits must be unique to the problem (rule 11). Below that, the EM
 ### Review rounds
 
 | Round | Style | Content |
-|---|---|---|
+| --- | --- | --- |
 | First review | Socratic | Stage 2 only: the key question has already passed Stage 1. Three to five questions pointing at the weakest parts, covering both logic and grain, worst first; one line on what works. Never names the missing branch. It concentrates on the top levels; if the first two splits can't be recovered, every question goes to them (rule 10). |
 | Sign-off after revision | Direct | What improved; what still fails, named plainly by its test or symptom; lower-level comments held back from the first review; one lesson for next time |
 
@@ -141,7 +146,7 @@ The first two splits must be unique to the problem (rule 11). Below that, the EM
 The first review opens with one of four verdicts, checked in this order:
 
 | Verdict | When | Opener |
-|---|---|---|
+| --- | --- | --- |
 | Key question | Stage 1 fails (see Stage 1: key question) | "The key question needs rethinking. Send back to me when you have reworked the tree with a new question." |
 | First cut | The first two splits can't be recovered, e.g. inflow vs outflow (rule 10) | "The first cut needs rethinking. Send back to me when you have reworked it." |
 | Rework | The top levels hold, but parts need rework | "Good start, but the tree needs some rework. Send back to me for a quick check when done." |
@@ -150,7 +155,7 @@ The first review opens with one of four verdicts, checked in this order:
 A Pass ends the run. After a revision, the sign-off opens with one of two verdicts:
 
 | Sign-off verdict | When | Opener |
-|---|---|---|
+| --- | --- | --- |
 | Signed off | The revision fixes the material faults | "Signed off. Use this to develop the workplan." |
 | Not there yet | Material faults remain | "Not there yet. Take what's left to the team session." |
 
@@ -181,10 +186,10 @@ TREE SURGERY
 Four prompts, all in Daniel Hart's voice (Common Module). The first two are calibrated and saved in this project; the build starts from them word for word.
 
 | Prompt | Job | Status |
-|---|---|---|
+| --- | --- | --- |
 | Stage 1: key question | Five tests on the pasted key question; the key question email if it isn't OK | Calibrated: `claude/tree-surgery-em-stage1-key-question.md` |
-| Tree reading | Turns the uploaded page into an indented outline (level 0 = key question) that only the EM sees; says when a page can't be read | To write in the build; check it with the pre-launch read test |
-| Stage 2: first review | The tree tests and rules above; verdict, internal findings and the email | Calibrated: `claude/tree-surgery-em-stage2-tree.md` |
+| Tree reading | Turns the uploaded page into an indented outline (level 0 = key question) that only the EM sees; says when a page can't be read | Written in the build (v1.1, 3 Nov 2026); passed the pre-launch read test |
+| Stage 2: first review | The tree tests and rules above; verdict, internal findings and the email, in two calls (findings, then the email) | Calibrated: `claude/tree-surgery-em-stage2-tree.md` |
 | Sign-off | Reads the first outline, the first email and the revised outline; sign-off verdict, what improved, what still fails, the held lower-level points, one lesson | To write in the build; calibrate on a few revised trees |
 
 The internal findings never reach the student or the record.
@@ -232,19 +237,19 @@ The key question is level 0, so the first split is level 1. "First two splits" m
 ## Functional requirements
 
 | ID | Requirement |
-|---|---|
+| --- | --- |
 | IT-1 | Briefing email in the inbox: key question first, then the tree |
 | IT-2 | Template download (PowerPoint) |
-| IT-3 | Stage 1: paste the key question (optional first-level sub-questions); EM review; re-entry up to 3 attempts (configurable); the upload stays locked until it is OK |
+| IT-3 | Stage 1: paste the key question (optional first-level sub-questions); EM review; 3 attempts per round (configurable), then the student reworks it and comes back with a new key question (a new round); the upload stays locked until it is OK |
 | IT-4 | Tree upload: one PDF or .pptx file, with a page or slide picker; size caps; files with no readable tree refused with a message |
-| IT-5 | Tree reading: the model reads the tree into an outline that only the EM sees; no correction step; an unreadable page gets an in-world message and a re-upload that doesn't use up the revision |
-| IT-6 | Stage 2 first review: verdict opener; 3–5 Socratic questions for First cut or Rework, up to two workplan pointers for Pass; about 200 words |
+| IT-5 | Tree reading: the model reads the tree into an outline that only the EM sees; no correction step; an unreadable page gets an in-world message and a re-upload that doesn't use up the revision; a tree of more than 60 boxes is read without its bottom level |
+| IT-6 | Stage 2 first review: verdict opener; 3–5 Socratic questions for First cut or Rework, up to two workplan pointers for Pass; about 200 words, never more than 250 |
 | IT-7 | A Pass ends the run; otherwise one revised upload |
-| IT-8 | Sign-off: direct, comparing the revision with the first draft; sign-off opener; the lower-level points held back; one lesson for next time |
-| IT-9 | Lock the tool for this case after a Pass or a sign-off |
+| IT-8 | Sign-off: direct, comparing the revision with the first draft; sign-off opener; the lower-level points held back (the sign-off finds them again: it doesn't see the first review's internal findings); one lesson for next time |
+| IT-9 | Lock the tool for this case after a Pass or a sign-off (a browser lock: clearing site data or another browser starts afresh; a new run for the next case is allowed) |
 | IT-10 | Record PDF: identity, key question attempts and Stage 1 emails, the tree page images, the Stage 2 emails, and an appendix with the EM's reading of each tree |
 | IT-11 | Context upload or paste, as in Question Time (required; case detector; page caps). The EM reads it for the client's situation only; feedback follows the rules. No case picker in v1 |
-| IT-12 | Each model call finishes inside the hosting limit (Netlify, about 26 seconds), with calls split as in Question Time; each email arrives within about 60 seconds |
+| IT-12 | Each model call finishes inside the hosting limit (Netlify, about 26 seconds), with calls split as in Question Time (the first review is two calls: findings, then the email); each email arrives within about 60 seconds |
 
 ## Out of scope and v2 ideas
 
@@ -259,7 +264,7 @@ The key question is level 0, so the first split is level 1. "First two splits" m
 ## Risks, success measures and open questions
 
 | Risk | Mitigation |
-|---|---|
+| --- | --- |
 | The EM misreads the uploaded tree (no correction step) | Template; pre-launch read test; the EM says when a page can't be read; the record shows how the EM read the tree |
 | EM penalises valid but unusual structures | Reference tree framed as coverage check; pilot on varied past trees |
 | Socratic questions too vague to act on | Each question must point at a named node or level |
@@ -273,7 +278,7 @@ The key question is level 0, so the first split is level 1. "First two splits" m
 - [x] Logic note for each split on the page: not in v1.
 - [x] A branch that breaks a constraint in the key question (eg "ethically") is out of scope (rule 16).
 - [x] Students bring their own key question, and Stage 1 reviews it.
-- [x] Stage 1 allows up to 3 key question attempts (configurable).
+- [x] Stage 1 allows 3 key question attempts a round (configurable); after a third Not OK the student reworks and starts a new round (v1.1).
 - [x] A Pass on the first review ends the run.
 - [x] Resolved: no case configs in v1; the EM judges by the rules, with the student's context for background.
 - [ ] Rerun the nine calibration trees in generic mode, with a student-style context instead of the PEIP case config, before the holdout test.
@@ -282,5 +287,6 @@ The key question is level 0, so the first split is level 1. "First two splits" m
 ## Change log
 
 | Version | Date | IDs | Summary |
-|---|---|---|---|
+| --- | --- | --- | --- |
+| 1.1 | 3 Nov 2026 | IT-3, IT-5, IT-6, IT-8, IT-9, IT-12 | Decisions from the build (spec D15–D24): Stage 1 OK wording; three-attempt rounds with rework and return; 250-word cap on emails; PDF read with its text layer; large trees read without their bottom level; first review in two calls; sign-off re-finds lower-level points; browser lock; read test result |
 | 1.0 | 2 Nov 2026 | IT-1 to IT-12 | Two stages (key question, then tree); four first-review verdicts and two sign-off verdicts; generic mode with context upload; tree upload with no correction step; calibration rules 1–26 |
