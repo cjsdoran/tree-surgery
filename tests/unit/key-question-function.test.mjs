@@ -5,6 +5,7 @@ import keyQuestion from '../../netlify/functions/key-question.mjs';
 import { keyQuestionMessage } from '../../netlify/lib/stages.mjs';
 import { setClientFactoryForTests } from '../../netlify/lib/anthropic.mjs';
 import { loadPrompt } from '../../netlify/lib/prompts.mjs';
+import { config } from '../../shared/limits.js';
 import { fakeClient, readEvents } from '../helpers/fakeAnthropic.js';
 import { FINDING_MARKER, json, notOkReply, okReply } from '../helpers/stage1.js';
 
@@ -62,7 +63,7 @@ describe('T-KQ-6: what the model receives', () => {
     expect(system.startsWith(loadPrompt('persona').text)).toBe(true);
     expect(system).toContain('# Tree Surgery — Stage 1: key question review');
     expect(system).toContain('Return one JSON object and nothing else');
-    expect(params).toMatchObject({ model: 'claude-opus-5-5', max_tokens: 900 });
+    expect(params).toMatchObject({ model: config.models.keyQuestion.model, max_tokens: config.models.keyQuestion.maxTokens });
     expect(params.messages[0].content).toContain('<key_question>');
   });
 });
