@@ -201,6 +201,7 @@ The usefulness tests encode Chris's judgement, so the EM is calibrated against h
 - **Set:** about 15 trees: Chris's three teaching examples (wealth, final grade, boyfriend/girlfriend), 8–10 past student trees, and contrastive pairs written at the edges of the rules.
 - **Answer key:** Chris's verdict on each tree, written before he sees the EM's, plus the planted flaws in each teaching example.
 - **Result (PEIP, three runs):** the EM's verdicts matched Chris's on all nine trees (eight student trees and Chris's good tree). 9 of 11 tree points were in the emails and 2 were held back, which has been fixed. This is in-sample: a holdout test on trees from another case is still to run.
+- **Result (generic mode, 3 Nov 2026):** with a student-style context and no case config, Stage 1 matched Chris on 8 of 9 trees and Stage 2 on all four trees that reach it, with every must-catch point in the emails and none of the must-not points. The miss, g3 ("maintain liquidity" with no figure), is now Not OK: Daniel was right by the Stage 1 rules, and the earlier OK came from the case config. Still in-sample: the holdout test is next.
 - **Misses:** each becomes a rule change or a case-config entry; then rerun.
 
 ### Rules from calibration so far
@@ -281,13 +282,14 @@ The key question is level 0, so the first split is level 1. "First two splits" m
 - [x] Stage 1 allows 3 key question attempts a round (configurable); after a third Not OK the student reworks and starts a new round (v1.1).
 - [x] A Pass on the first review ends the run.
 - [x] Resolved: no case configs in v1; the EM judges by the rules, with the student's context for background.
-- [ ] Rerun the nine calibration trees in generic mode, with a student-style context instead of the PEIP case config, before the holdout test.
+- [x] Rerun the nine calibration trees in generic mode, with a student-style context instead of the PEIP case config, before the holdout test. Done 3 Nov 2026: see Calibration.
 - [ ] Holdout test on trees from another case, before students use the tool.
 
 ## Change log
 
 | Version | Date | IDs | Summary |
 | --- | --- | --- | --- |
+| 1.3 | 3 Nov 2026 | IT-3, IT-6 | Generic-mode calibration rerun: Stage 1 8 of 9, Stage 2 4 of 4; g3 changed to Not OK (key question) |
 | 1.2 | 3 Nov 2026 | IT-8, IT-9 | Sign-off prompt written (v1.0) and approved on two sample revisions; it judges by the Stage 2 rules word for word; a sign-off of either verdict ends and locks the run |
 | 1.1 | 3 Nov 2026 | IT-3, IT-5, IT-6, IT-8, IT-9, IT-12 | Decisions from the build (spec D15–D24): Stage 1 OK wording; three-attempt rounds with rework and return; 250-word cap on emails; PDF read with its text layer; large trees read without their bottom level; first review in two calls; sign-off re-finds lower-level points; browser lock; read test result |
 | 1.0 | 2 Nov 2026 | IT-1 to IT-12 | Two stages (key question, then tree); four first-review verdicts and two sign-off verdicts; generic mode with context upload; tree upload with no correction step; calibration rules 1–26 |
