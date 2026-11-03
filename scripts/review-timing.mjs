@@ -36,7 +36,7 @@ export async function withRetries(makeStage, body) {
       continue;
     }
     const r = stage.read(reply.text);
-    tries.push({ attempt, ms, outcome: r.ok ? 'ok' : 'invalid', errors: r.ok ? undefined : r.errors, outputTokens: reply.outputTokens });
+    tries.push({ attempt, ms, outcome: r.ok ? 'ok' : 'invalid', errors: r.ok ? undefined : r.errors, inputTokens: reply.inputTokens, outputTokens: reply.outputTokens, servedBy: reply.servedBy });
     if (r.ok) return { ok: true, data: r.data, tries };
     previousErrors = r.errors;
   }

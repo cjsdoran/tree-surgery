@@ -126,4 +126,31 @@ Unit and e2e tests run with every model call mocked (no cost). The read test (RT
 
 ## 5. Where each test lives
 
-To be filled in as milestones land, following Question Time's layout: `tests/unit/*.test.{js,jsx,mjs}` (vitest) and `tests/e2e/full-run.spec.js` (Playwright).
+Run `npm test` (vitest, `tests/unit/`) and `npm run e2e` (Playwright, `tests/e2e/`). Every model call is mocked. The read test and pilot are scripts that make real calls: `scripts/read-test.mjs`, `scripts/review-timing.mjs`, `scripts/sign-off-samples.mjs`, `scripts/pilot-run.mjs` (each a dry run without `--yes`).
+
+| ID | File |
+| --- | --- |
+| T-BRF-1 | `briefing.test.jsx` |
+| T-SET-1 | `setup.test.jsx`, `guard.test.mjs` |
+| T-CTX-1..5 | `extract.test.js`, `context-screen.test.jsx`; real files in `private-fixtures.test.js` |
+| T-DET-1..5 | `caseDetector.test.js`, `guard.test.mjs`, `tree-extract.test.js`; Sets A and B in `private-fixtures.test.js` |
+| T-KQ-1..8 | `key-question-screen.test.jsx`, `key-question-function.test.mjs`, `record.test.js` (T-KQ-8) |
+| T-TPL-1 | `tree-screen.test.jsx` (hidden while `public/Tree-Surgery-template.pptx` is absent; the shown case is checked once Chris adds the file) |
+| T-UP-1..7, T-SHP-1..5 | `tree-extract.test.js`, `tree-screen.test.jsx` |
+| T-READ-1..8 | `read-tree-function.test.mjs`, `outline.test.js`, `tree-screen.test.jsx` (T-READ-5 applies only if Q11 caps re-uploads; it doesn't today) |
+| T-REV-1..6 | `review-flow.test.jsx`, `review-tree-function.test.mjs`, `model-call.test.mjs`, `key-question-screen.test.jsx` (retries) |
+| T-EML-1..8 | `email-check.test.js`, `email-check-review.test.js`, `review-tidy.test.js`, `sign-off.test.mjs` |
+| T-FLOW-1..3 | `review-flow.test.jsx`, `sign-off-flow.test.jsx` |
+| T-SIGN-1..4 | `sign-off.test.mjs`, `sign-off-flow.test.jsx` |
+| T-LOCK-1..3 | `record-screen.test.jsx`, `sign-off-flow.test.jsx` |
+| T-PDF-1..4 | `record.test.js` |
+| T-SAV-1..3 | `session.test.js`, `app.test.jsx`; a reload mid-run in `tests/e2e/full-run.spec.js` |
+| T-ERR-1..2 | `error-codes.test.js`, `guard.test.mjs`, `setup.test.jsx`, `tree-extract.test.js`, `model-call.test.mjs` |
+| T-SEC-1 | `security.test.mjs` (a fresh build and every function's responses) |
+| T-SEC-2 | `model-call.test.mjs`, `key-question-function.test.mjs`, `review-tree-function.test.mjs` (findings sealed), `record.test.js` |
+| T-TIME-1..2 | `model-call.test.mjs` |
+| T-A11Y-1 | `tests/e2e/full-run.spec.js` (axe-core on every screen, WCAG 2.1 A/AA, and at 375 px) |
+| T-PIL-1..2 | `pilot-run.test.mjs`, `outline.test.js` (the read-test comparator) |
+| T-E2E-1 | `tests/e2e/full-run.spec.js` |
+
+Not covered by automated tests: the Content Security Policy in `netlify.toml` (the e2e run uses the Vite dev server, which sends no CSP); check on the deploy preview, as Question Time did with `E2E_BASE_URL`.
