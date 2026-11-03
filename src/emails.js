@@ -59,6 +59,41 @@ export function treeReviewEmail(session, entry) {
   };
 }
 
+/** Daniel's sign-off on the revised tree (IT-8): headed sections, stated not asked (spec §8). */
+export function signOffEmail(session, entry) {
+  const { email } = entry.review;
+  const sections = [
+    ['What improved', email.improved],
+    ['What still needs work', email.stillFails],
+    ['Lower-level points', email.heldPoints],
+  ].filter(([, items]) => items.length).map(([heading, items]) => ({ heading, items }));
+  return {
+    id: 'sign-off',
+    ...fromDaniel(session),
+    sentAt: entry.review.receivedAt,
+    subject: email.subject,
+    opener: email.opener,
+    paragraphs: [],
+    sections,
+    closing: `Lesson for next time: ${email.lesson}`,
+    ps: email.ps,
+  };
+}
+
+/** An email as plain text, as the student read it: what the sign-off gets as the first review. */
+export function emailAsText(email) {
+  return [
+    `Subject: ${email.subject}`,
+    '',
+    email.greeting,
+    email.opener,
+    ...email.paragraphs,
+    ...(email.numbered ?? []).map((q, i) => `${i + 1}. ${q.question}${q.followUp ? ` ${q.followUp}` : ''}`),
+    ...(email.bullets ?? []).map((b) => `- ${b}`),
+    ...(email.ps ? [`P.S. ${email.ps}`] : []),
+  ].filter((line) => line !== undefined && line !== null).join('\n');
+}
+
 /** Every email the session has received so far, oldest first. */
 export function inboxEmails(session) {
   const emails = [briefingEmail(session)];
@@ -70,6 +105,8 @@ export function inboxEmails(session) {
   });
   if (kq?.agreed) emails.push(keyQuestionOkEmail(session));
   (session.unreadable ?? []).forEach((u, i) => emails.push(unreadableEmail(session, u, i)));
-  for (const entry of session.trees ?? []) if (entry.review) emails.push(treeReviewEmail(session, entry));
+  for (const entry of session.trees ?? []) {
+    if (entry.review) emails.push(entry.round === 'revision' ? signOffEmail(session, entry) : treeReviewEmail(session, entry));
+  }
   return emails.sort((a, b) => String(a.sentAt).localeCompare(String(b.sentAt)));
 }

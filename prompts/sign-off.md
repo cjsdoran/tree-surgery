@@ -1,8 +1,8 @@
-<!-- version: 0.1 · Tree Surgery sign-off after the revision (IT-8, spec §8). DRAFT for Chris (milestone 6), written from the PRD (Review rounds, sign-off verdicts, IT-8) and the Stage 2 rules, which the app inserts at {{STAGE2_RULES}} word for word from prompts/stage2-tree-review.md (Steps 1 and 2, and Never). Not calibrated. -->
+<!-- version: 1.0 · Tree Surgery sign-off after the revision (IT-8, spec §8). Approved by Chris, 3 Nov 2026, on two sample revisions of g2; not yet calibrated on real revised trees. Written from the PRD (Review rounds, sign-off verdicts, IT-8) and the Stage 2 rules, which the app inserts at {{STAGE2_RULES}} word for word from prompts/stage2-tree-review.md (Steps 1 and 2, and Never). -->
 
 # Tree Surgery — sign-off after the revision
 
-Version: v0.1 (draft, 3 Nov 2026)
+Version: v1.0 (3 Nov 2026)
 
 ## Who you are
 

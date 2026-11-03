@@ -7,6 +7,7 @@ import { loadPdfjs } from '../extract/loadPdfjs.js';
 import { closeTree, openTreeFile, prepareTreePage } from '../tree/treeUpload.js';
 import { readTree } from '../tree/readTree.js';
 import { afterReview, reviewTree } from '../tree/reviewTree.js';
+import { afterSignOff, signOff } from '../tree/signOff.js';
 import { useElapsed } from './KeyQuestionScreen.jsx';
 
 /* global __TREE_TEMPLATE__ */
@@ -19,8 +20,8 @@ const defaultDeps = {
   thumbnails: async (handle) => (await import('../tree/browserCanvas.js')).pdfThumbnails(handle),
 };
 
-// What follows a reading: for the first tree, Daniel's review (IT-6, spec §7). Each returns the
-// session changes to make, or a failure. The revision's sign-off is added in milestone 6.
+// What follows a reading: Daniel's first review (IT-6, spec §7), or for the revision his sign-off
+// (IT-8, spec §8). Each returns the session changes to make, or a failure.
 export const RESPONSES = {
   first: {
     waiting: 'Daniel is reviewing your tree…',
@@ -29,7 +30,16 @@ export const RESPONSES = {
       return r.ok ? { ok: true, patch: (s) => afterReview(s, r.review) } : r;
     },
   },
+  revision: {
+    waiting: 'Daniel is signing off your revised tree…',
+    async run(session, entry, call) {
+      const r = await signOff(session, entry, { call });
+      return r.ok ? { ok: true, patch: (s) => afterSignOff(s, r.review) } : r;
+    },
+  },
 };
+
+export const SIGNED_NEXT = 'This run is complete. Download your record and upload it to Canvas.';
 
 // Step 5 (IT-2, IT-4, IT-5, spec §6), and step 7 for the revision (IT-7): upload one PDF or .pptx,
 // pick the page with the tree, Daniel reads it, then replies. No correction step. An unreadable
@@ -133,6 +143,22 @@ export function TreeScreen({ session, updateSession, round = 'first', deps = {} 
       return;
     }
     updateSession(r.patch, { immediate: true });
+  }
+
+  if (entry?.review && round === 'revision') {
+    const email = inboxEmails(session).find((e) => e.id === 'sign-off');
+    return (
+      <section className="step-form" aria-labelledby="tree-heading">
+        <h2 id="tree-heading">Daniel&rsquo;s sign-off</h2>
+        <div className="reply"><EmailView email={email} headingLevel={3} /></div>
+        <p className="notice">{SIGNED_NEXT}</p>
+        <div className="actions">
+          <button type="button" className="btn" onClick={() => updateSession({ step: 'record' }, { immediate: true })}>
+            Continue to your record
+          </button>
+        </div>
+      </section>
+    );
   }
 
   if (entry) {

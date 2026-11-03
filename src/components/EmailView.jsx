@@ -26,6 +26,13 @@ export function EmailView({ email, headingLevel = 2 }) {
           ))}
         </ol>
       )}
+      {email.sections?.map((s) => (
+        <div key={s.heading}>
+          <p><strong>{s.heading}</strong></p>
+          <ul>{s.items.map((item, i) => <li key={i}>{item}</li>)}</ul>
+        </div>
+      ))}
+      {email.closing && <p>{email.closing}</p>}
       {email.ps && <p>P.S. {email.ps}</p>}
       <p>{email.signOff}</p>
       <p className="signature">{SIGNATURE}</p>

@@ -139,7 +139,7 @@ The first two splits must be unique to the problem (rule 11). Below that, the EM
 | Round | Style | Content |
 | --- | --- | --- |
 | First review | Socratic | Stage 2 only: the key question has already passed Stage 1. Three to five questions pointing at the weakest parts, covering both logic and grain, worst first; one line on what works. Never names the missing branch. It concentrates on the top levels; if the first two splits can't be recovered, every question goes to them (rule 10). |
-| Sign-off after revision | Direct | What improved; what still fails, named plainly by its test or symptom; lower-level comments held back from the first review; one lesson for next time |
+| Sign-off after revision | Direct | What improved; what still fails, named plainly by its test or symptom; lower-level comments held back from the first review; one lesson for next time. A sign-off of either verdict ends the run |
 
 ### First-review verdict
 
@@ -190,7 +190,7 @@ Four prompts, all in Daniel Hart's voice (Common Module). The first two are cali
 | Stage 1: key question | Five tests on the pasted key question; the key question email if it isn't OK | Calibrated: `claude/tree-surgery-em-stage1-key-question.md` |
 | Tree reading | Turns the uploaded page into an indented outline (level 0 = key question) that only the EM sees; says when a page can't be read | Written in the build (v1.1, 3 Nov 2026); passed the pre-launch read test |
 | Stage 2: first review | The tree tests and rules above; verdict, internal findings and the email, in two calls (findings, then the email) | Calibrated: `claude/tree-surgery-em-stage2-tree.md` |
-| Sign-off | Reads the first outline, the first email and the revised outline; sign-off verdict, what improved, what still fails, the held lower-level points, one lesson | To write in the build; calibrate on a few revised trees |
+| Sign-off | Reads the first outline, the first email and the revised outline; sign-off verdict, what improved, what still fails, the held lower-level points, one lesson | Written in the build (v1.0, 3 Nov 2026), using the Stage 2 rules word for word; approved by Chris on two sample revisions; calibrate on real revised trees |
 
 The internal findings never reach the student or the record.
 
@@ -288,5 +288,6 @@ The key question is level 0, so the first split is level 1. "First two splits" m
 
 | Version | Date | IDs | Summary |
 | --- | --- | --- | --- |
+| 1.2 | 3 Nov 2026 | IT-8, IT-9 | Sign-off prompt written (v1.0) and approved on two sample revisions; it judges by the Stage 2 rules word for word; a sign-off of either verdict ends and locks the run |
 | 1.1 | 3 Nov 2026 | IT-3, IT-5, IT-6, IT-8, IT-9, IT-12 | Decisions from the build (spec D15–D24): Stage 1 OK wording; three-attempt rounds with rework and return; 250-word cap on emails; PDF read with its text layer; large trees read without their bottom level; first review in two calls; sign-off re-finds lower-level points; browser lock; read test result |
 | 1.0 | 2 Nov 2026 | IT-1 to IT-12 | Two stages (key question, then tree); four first-review verdicts and two sign-off verdicts; generic mode with context upload; tree upload with no correction step; calibration rules 1–26 |
