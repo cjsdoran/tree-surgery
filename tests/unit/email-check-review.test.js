@@ -4,14 +4,15 @@ import { checkTreeReview, countWords } from '../../shared/emailCheck.js';
 import { checkSchema } from '../../shared/schemaCheck.js';
 import { fillTreeReview } from '../../netlify/lib/stages.mjs';
 import { config } from '../../shared/limits.js';
-import { firstCutReply, passReply, reworkReply } from '../helpers/stage2.js';
+import { firstCutReply, partA, passReply, reworkReply } from '../helpers/stage2.js';
 
 const errorsOf = (r) => checkTreeReview(r).errors;
 
 describe('checkTreeReview', () => {
   it('passes the fixtures and their schema', () => {
     for (const r of [reworkReply(), firstCutReply(), passReply()]) {
-      expect(checkSchema('tree-review', r).ok).toBe(true);
+      expect(checkSchema('tree-review-findings', partA(r)).ok).toBe(true);
+      expect(checkSchema('tree-review-email', { email: r.email }).ok).toBe(true);
       expect(checkTreeReview(r)).toEqual({ ok: true, errors: [] });
     }
   });
@@ -84,8 +85,8 @@ describe('checkTreeReview', () => {
     delete r.email.pointers;
     delete r.email.ps;
     delete r.email.questions[1].followUp;
-    expect(checkSchema('tree-review', r).ok).toBe(false);
-    expect(checkSchema('tree-review', fillTreeReview(r)).ok).toBe(true);
+    expect(checkSchema('tree-review-email', { email: r.email }).ok).toBe(false);
+    expect(checkSchema('tree-review-email', { email: fillTreeReview(r).email }).ok).toBe(true);
   });
 
   it('a whatWorks of two sentences, or a long P.S., fails', () => {

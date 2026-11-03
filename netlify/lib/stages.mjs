@@ -5,6 +5,7 @@ import { emSystemPrompt, taskSystemPrompt } from './prompts.mjs';
 import { checkSchema, parseModelJson } from '../../shared/schemaCheck.js';
 import { checkKeyQuestion, checkTreeReview, splitFollowUp } from '../../shared/emailCheck.js';
 import { checkNodes, nodesFromLines } from '../../shared/outline.js';
+import { seal } from './seal.mjs';
 
 const INVALID_JSON = 'Your reply was not a single valid JSON object. Return only the JSON object.';
 
@@ -143,29 +144,63 @@ export function fillTreeReview(data) {
   return { ...data, email };
 }
 
-/** The user message in the tagged blocks the Stage 2 prompt expects. */
-export function reviewTreeMessage(body) {
-  return [
+/**
+ * The user message for one part of the review, in the tagged blocks the Stage 2 prompt
+ * expects. The email part also carries Part A, opened from its sealed token (spec §7.1).
+ */
+export function reviewTreeMessage(body, part, findings = null) {
+  const blocks = [
+    `<part>${part}</part>`,
     `<key_question>\n${body.keyQuestion.trim()}\n</key_question>`,
     `<tree_outline>\n${body.outline}\n</tree_outline>`,
     `<context>\n${body.context.text}\n</context>`,
-  ].join('\n\n') + previousErrorsBlock(body.previousErrors);
+  ];
+  if (findings) blocks.push(`<findings>\n${JSON.stringify(findings, null, 2)}\n</findings>`);
+  return blocks.join('\n\n') + previousErrorsBlock(body.previousErrors);
 }
 
-export function reviewTreeStage(body) {
+/**
+ * Part A: verdict and findings. The browser gets them only as a sealed token it can't read
+ * (TS-5); the pilot harness reads them with `read`.
+ */
+export function reviewFindingsStage(body) {
   const prompt = emSystemPrompt('stage2-tree-review');
-  const read = (text) => readReply(text, { schema: 'tree-review', fill: fillTreeReview, check: checkTreeReview });
+  const read = (text) => readReply(text, { schema: 'tree-review-findings', check: () => ({ ok: true, errors: [] }) });
   return {
     call: 'reviewTree',
     system: prompt.text,
-    content: reviewTreeMessage(body),
+    content: reviewTreeMessage(body, 'findings'),
     promptVersion: prompt.version,
     read,
-    // The browser gets the verdict and the email; the findings and the reasons stay here (TS-5).
     finish(text) {
       const r = read(text);
       if (!r.ok) return { type: 'invalid', errors: r.errors };
-      return { type: 'result', verdict: r.data.verdict, email: r.data.email };
+      return { type: 'result', part: 'findings', token: seal(r.data, body) };
+    },
+  };
+}
+
+/** Part B: the email, written from Part A. The browser gets the verdict and the email. */
+export function reviewEmailStage(body, findings) {
+  const prompt = emSystemPrompt('stage2-tree-review');
+  const read = (text) => {
+    const r = readReply(text, {
+      schema: 'tree-review-email',
+      fill: fillTreeReview,
+      check: (data) => checkTreeReview({ verdict: findings.verdict, email: data.email }),
+    });
+    return r.ok ? { ok: true, data: { verdict: findings.verdict, email: r.data.email } } : r;
+  };
+  return {
+    call: 'reviewEmail',
+    system: prompt.text,
+    content: reviewTreeMessage(body, 'email', findings),
+    promptVersion: prompt.version,
+    read,
+    finish(text) {
+      const r = read(text);
+      if (!r.ok) return { type: 'invalid', errors: r.errors };
+      return { type: 'result', part: 'email', verdict: r.data.verdict, email: r.data.email };
     },
   };
 }

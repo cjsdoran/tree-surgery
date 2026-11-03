@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tree-review-findings.schema.json",
+  "title": "Stage 2 Part A: Daniel's internal findings (spec §10.2). Never sent to the browser (TS-5).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "keyQuestionCheck",
+    "verdict",
+    "verdictReason",
+    "findings"
+  ],
+  "properties": {
+    "keyQuestionCheck": {
+      "type": "string"
+    },
+    "verdict": {
+      "enum": [
+        "first_cut",
+        "rework",
+        "pass"
+      ]
+    },
+    "verdictReason": {
+      "type": "string"
+    },
+    "findings": {
+      "description": "Part A, internal: never sent to the browser (TS-5).",
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "n",
+          "level",
+          "test",
+          "finding",
+          "inEmail"
+        ],
+        "properties": {
+          "n": {
+            "type": "integer"
+          },
+          "level": {
+            "type": [
+              "string",
+              "integer"
+            ]
+          },
+          "test": {
+            "type": "string"
+          },
+          "finding": {
+            "type": "string"
+          },
+          "inEmail": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

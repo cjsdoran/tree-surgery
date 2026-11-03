@@ -1,5 +1,6 @@
-// Daniel's first review of the tree (IT-6, IT-7, spec §7): the reading, rendered as the outline,
-// goes to /api/review-tree with the agreed key question and the context.
+// Daniel's first review of the tree (IT-6, IT-7, spec §7): two calls to /api/review-tree (D24).
+// The findings call returns Part A sealed in a token the browser can't read; the email call
+// sends it back and gets the verdict and the email. Each call is retried on its own.
 import { askDaniel } from '../daniel/askDaniel.js';
 import { buildContext } from '../extract/context.js';
 import { outlineFor } from './readTree.js';
@@ -9,14 +10,19 @@ import { outlineFor } from './readTree.js';
  */
 export async function reviewTree(session, entry, { call } = {}) {
   const context = buildContext(session.context?.items ?? []);
-  const body = {
+  const base = {
     keyQuestion: session.keyQuestion.agreed.keyQuestion,
     outline: outlineFor(entry),
     context: { text: context.text, pageCount: context.pageCount },
     mode: session.mode ?? 'generic',
     caseId: session.caseId ?? null,
   };
-  const r = await askDaniel('/api/review-tree', body, session.setup?.accessCode, call ? { call } : {});
+  const opts = call ? { call } : {};
+  const code = session.setup?.accessCode;
+
+  const findings = await askDaniel('/api/review-tree', { ...base, part: 'findings' }, code, opts);
+  if (!findings.ok) return findings;
+  const r = await askDaniel('/api/review-tree', { ...base, part: 'email', token: findings.result.token }, code, opts);
   if (!r.ok) return r;
   return {
     ok: true,
@@ -26,7 +32,7 @@ export async function reviewTree(session, entry, { call } = {}) {
       receivedAt: new Date().toISOString(),
       promptVersion: r.result.promptVersion ?? null,
       model: r.result.servedBy ?? null,
-      durationMs: r.result.durationMs ?? null,
+      durationMs: (findings.result.durationMs ?? 0) + (r.result.durationMs ?? 0) || null,
     },
   };
 }

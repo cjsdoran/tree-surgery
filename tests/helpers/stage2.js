@@ -60,6 +60,18 @@ export function passReply(overrides = {}) {
   };
 }
 
+/** The model's Part A (findings call) and Part B (email call) replies for a full review. */
+export function partA(reply) {
+  const { email: _e, ...a } = reply;
+  return a;
+}
+export const partB = (reply) => ({ email: reply.email });
+
+/** What a mocked /api/review-tree returns to the browser for each part (D24). */
+export function reviewCall(reply) {
+  return (body) => ({ ok: true, result: body.part === 'findings' ? { part: 'findings', token: 'SEALED' } : { part: 'email', ...asResult(reply) } });
+}
+
 /** The browser's view: what /api/review-tree sends after stripping the findings. */
 export function asResult(reply) {
   return { verdict: reply.verdict, email: reply.email, promptVersion: 'stage2-tree-review 1.1; persona 1.0', servedBy: 'claude-opus-5-5' };

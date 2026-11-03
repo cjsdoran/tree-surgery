@@ -9,7 +9,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { callModel } from '../netlify/lib/anthropic.mjs';
-import { readTreeStage, reviewTreeStage } from '../netlify/lib/stages.mjs';
+import { readTreeStage, reviewEmailStage, reviewFindingsStage } from '../netlify/lib/stages.mjs';
 import { renderOutline } from '../shared/outline.js';
 import { config } from '../shared/limits.js';
 import { buildContext, processPaste } from '../src/extract/context.js';
@@ -72,7 +72,7 @@ async function main() {
   const built = buildContext([notes.item]);
   const context = { text: built.text, pageCount: built.pageCount };
   const trees = expected.trees.filter((t) => t.stage1 === 'OK' && (!only.length || only.includes(t.id)));
-  console.log(`Review timing: ${trees.length} trees × ${runs} review run(s), REAL model calls (${config.models.reviewTree.model}, max ${config.models.reviewTree.maxTokens} tokens).`);
+  console.log(`Review timing: ${trees.length} trees × ${runs} review run(s), REAL model calls (${config.models.reviewTree.model}, findings max ${config.models.reviewTree.maxTokens} tokens, email max ${config.models.reviewEmail.maxTokens}).`);
 
   const rows = [['tree', 'call', 'run', 'attempt', 'ms', 'outcome', 'outputTokens']];
   const summary = [];
@@ -92,15 +92,20 @@ async function main() {
     const report = [`# Review timing: ${tree.id}`, '', `Chris's verdict: ${tree.stage2}`, '', '## Outline sent', '', '```', outline, '```', ''];
     const verdicts = [];
     for (let run = 1; run <= runs; run++) {
-      const r = await withRetries(reviewTreeStage, { keyQuestion: tree.keyQuestion, outline, context });
-      r.tries.forEach((t) => rows.push([tree.id, 'review', run, t.attempt, t.ms, t.outcome, t.outputTokens]));
-      const times = r.tries.map((t) => `${(t.ms / 1000).toFixed(1)} s ${t.outcome}`).join(', ');
-      if (!r.ok) {
+      // Two calls since D24: Part A (findings), then Part B (the email) written from it.
+      const reviewBody = { keyQuestion: tree.keyQuestion, outline, context };
+      const a = await withRetries(reviewFindingsStage, reviewBody);
+      a.tries.forEach((t) => rows.push([tree.id, 'findings', run, t.attempt, t.ms, t.outcome, t.outputTokens]));
+      const b = a.ok ? await withRetries((body) => reviewEmailStage(body, a.data), reviewBody) : { ok: false, tries: [] };
+      b.tries.forEach((t) => rows.push([tree.id, 'email', run, t.attempt, t.ms, t.outcome, t.outputTokens]));
+      const fmt = (r) => r.tries.map((t) => `${(t.ms / 1000).toFixed(1)} s ${t.outcome}`).join(', ');
+      const times = `findings ${fmt(a)}; email ${fmt(b) || '-'}`;
+      if (!a.ok || !b.ok) {
         verdicts.push(`run ${run}: failed (${times})`);
-        report.push(`## Run ${run}: failed`, '', ...r.tries.map((t) => `- attempt ${t.attempt}: ${t.outcome}${t.errors ? ` — ${t.errors.join('; ')}` : ''}`), '');
+        report.push(`## Run ${run}: failed`, '', ...[...a.tries, ...b.tries].map((t) => `- attempt ${t.attempt}: ${t.outcome}${t.errors ? ` — ${t.errors.join('; ')}` : ''}`), '');
         continue;
       }
-      const d = r.data;
+      const d = { ...a.data, email: b.data.email };
       verdicts.push(`run ${run}: ${d.verdict} (${times})`);
       report.push(
         `## Run ${run}: ${d.verdict} (${times})`, '',

@@ -28,7 +28,10 @@ const handle = (kind, pageCount) => ({
 const prepared = (n) => ({ ok: true, tree: { kind: 'pdf', page: n, image: { mediaType: 'image/png', base64: 'iVBO' }, pageText: 'Page' }, record: { mediaType: 'image/jpeg', base64: '/9j/', width: 1600, height: 900 } });
 const REWORK = { verdict: 'rework', email: { subject: 'Re: your tree', opener: 'x', whatWorks: 'y', questions: [], pointers: [], ps: null }, promptVersion: 'stage2-tree-review 1.1', servedBy: 'claude-opus-5-5' };
 // Answers each endpoint: the reading for /api/read-tree, a review for /api/review-tree.
-const route = (reading, review = REWORK) => vi.fn(async (path) => ({ ok: true, result: path === '/api/read-tree' ? reading : review }));
+const route = (reading, review = REWORK) => vi.fn(async (path, body) => ({
+  ok: true,
+  result: path === '/api/read-tree' ? reading : body.part === 'findings' ? { part: 'findings', token: 'SEALED' } : review,
+}));
 const READING = { status: 'read', reason: null, rootAsWritten: KQ, rootDiffers: false, notes: [], nodes: [{ level: 0, text: KQ }, { level: 1, text: 'Grow?' }, { level: 1, text: 'Cut?' }], promptVersion: 'read-tree 1.0', servedBy: 'claude-opus-5-5' };
 
 function atTree(deps) {
@@ -135,7 +138,7 @@ describe('T-READ-1: a reading', () => {
 
 describe('T-READ-4: an unreadable page', () => {
   it("adds Daniel's email with the reason, offers a fresh upload, and doesn't use up the revision", async () => {
-    const call = vi.fn().mockResolvedValueOnce({ ok: true, result: { status: 'unreadable', reason: 'blurred', nodes: [] } }).mockResolvedValueOnce({ ok: true, result: READING }).mockResolvedValueOnce({ ok: true, result: REWORK });
+    const call = vi.fn().mockResolvedValueOnce({ ok: true, result: { status: 'unreadable', reason: 'blurred', nodes: [] } }).mockResolvedValueOnce({ ok: true, result: READING }).mockResolvedValueOnce({ ok: true, result: { part: 'findings', token: 'SEALED' } }).mockResolvedValueOnce({ ok: true, result: REWORK });
     const storage = atTree({ openFile: async () => ({ ok: true, handle: handle('pdf', 1) }), prepare: async (_h, n) => prepared(n), call });
     await choose();
     await sendTree();

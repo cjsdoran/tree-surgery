@@ -84,7 +84,7 @@ describe('T-SEC-1: function responses', () => {
     ['check', check, {}],
     ['key-question', keyQuestion, { keyQuestion: 'How can PEIP survive?', subQuestions: [], context, attempt: 1 }],
     ['read-tree', readTree, { round: 'first', keyQuestion: 'How can PEIP survive?', tree: { kind: 'pptx', page: 1, shapes: 'S1 "How?"' } }],
-    ['review-tree', reviewTree, { keyQuestion: 'How can PEIP survive?', outline: 'KEY QUESTION (level 0): How?', context, attempt: 1 }],
+    ['review-tree', reviewTree, { part: 'findings', keyQuestion: 'How can PEIP survive?', outline: 'KEY QUESTION (level 0): How?', context, attempt: 1 }],
     ['sign-off', signOff, { keyQuestion: 'How?', firstOutline: 'A', firstEmail: 'B', revisedOutline: 'C', context, attempt: 1 }],
   ];
 

@@ -3,12 +3,14 @@
 import Ajv2020 from 'ajv/dist/2020.js';
 import keyQuestionSchema from '../schemas/key-question.schema.json' with { type: 'json' };
 import readTreeSchema from '../schemas/read-tree.schema.json' with { type: 'json' };
-import treeReviewSchema from '../schemas/tree-review.schema.json' with { type: 'json' };
+import treeReviewFindingsSchema from '../schemas/tree-review-findings.schema.json' with { type: 'json' };
+import treeReviewEmailSchema from '../schemas/tree-review-email.schema.json' with { type: 'json' };
 
 const SCHEMAS = {
   'key-question': keyQuestionSchema,
   'read-tree': readTreeSchema,
-  'tree-review': treeReviewSchema,
+  'tree-review-findings': treeReviewFindingsSchema,
+  'tree-review-email': treeReviewEmailSchema,
 };
 
 const ajv = new Ajv2020({ allErrors: true, strict: false });

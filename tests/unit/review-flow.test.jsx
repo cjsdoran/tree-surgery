@@ -8,7 +8,7 @@ import { PASS_NEXT, REVISE_NEXT } from '../../src/screens/FeedbackScreen.jsx';
 import { createSession, loadSaved, saveSession } from '../../src/store/session.js';
 import { config } from '../../shared/limits.js';
 import { memoryStorage } from '../helpers/storage.js';
-import { asResult, firstCutReply, passReply, reworkReply } from '../helpers/stage2.js';
+import { firstCutReply, passReply, reviewCall, reworkReply } from '../helpers/stage2.js';
 
 afterEach(() => {
   cleanup();
@@ -27,7 +27,7 @@ const handle = { kind: 'pdf', name: 'tree.pdf', pageCount: 1, sizeBytes: 1, page
 const prepared = { ok: true, tree: { kind: 'pdf', page: 1, image: { mediaType: 'image/png', base64: 'iVBO' } }, record: null };
 
 function run(review) {
-  const call = vi.fn(async (path) => (path === '/api/read-tree' ? { ok: true, result: READING } : review(path)));
+  const call = vi.fn(async (path, body) => (path === '/api/read-tree' ? { ok: true, result: READING } : review(body)));
   const storage = memoryStorage();
   saveSession({ ...createSession(), ...SESSION }, storage);
   render(<App storage={storage} screens={{ tree: { openFile: async () => ({ ok: true, handle }), prepare: async () => prepared, call } }} />);
@@ -48,7 +48,7 @@ describe('T-REV-1: the review email', () => {
     ['rework', reworkReply()],
     ['first_cut', firstCutReply()],
   ])('%s: bold opener, what works, numbered questions with follow-ups, P.S., signature', async (_v, r) => {
-    run(async () => ({ ok: true, result: asResult(r) }));
+    run(reviewCall(r));
     await upload();
     const email = screen.getByRole('heading', { level: 3, name: 'Re: your issue tree' }).closest('article');
     expect(within(email).getByText('Hi Mei,')).toBeTruthy();
@@ -63,7 +63,7 @@ describe('T-REV-1: the review email', () => {
   });
 
   it('pass: pointers as bullets, no numbered list', async () => {
-    run(async () => ({ ok: true, result: asResult(passReply()) }));
+    run(reviewCall(passReply()));
     await upload();
     const email = screen.getByRole('heading', { level: 3, name: 'Re: your issue tree' }).closest('article');
     expect(within(email).getByText(config.openers.pass).tagName).toBe('STRONG');
@@ -74,10 +74,13 @@ describe('T-REV-1: the review email', () => {
 
 describe('T-REV-2 (browser side): the review request', () => {
   it('sends the agreed key question, the outline with its notes, and the context', async () => {
-    const { call } = run(async () => ({ ok: true, result: asResult(reworkReply()) }));
+    const { call } = run(reviewCall(reworkReply()));
     await upload();
     const [path, body] = call.mock.calls[1];
     expect(path).toBe('/api/review-tree');
+    expect(body.part).toBe('findings');
+    // The email call sends back the sealed Part A, with the same inputs.
+    expect(call.mock.calls[2][1]).toMatchObject({ part: 'email', token: 'SEALED', outline: body.outline });
     expect(body.keyQuestion).toBe(KQ);
     expect(body.outline).toBe(`KEY QUESTION (level 0): ${KQ}\n[Level 4 left out (12 boxes) to keep the reading short.]\n\n1. How to increase cash inflow?\n2. How to decrease cash outflow?`);
     expect(body.context.text).toContain('PEIP makes jam.');
@@ -86,7 +89,7 @@ describe('T-REV-2 (browser side): the review request', () => {
 
 describe('T-FLOW-1: a Pass ends the run', () => {
   it('locks the run, says so, and leads to the record', async () => {
-    const { storage } = run(async () => ({ ok: true, result: asResult(passReply()) }));
+    const { storage } = run(reviewCall(passReply()));
     await upload();
     let saved = loadSaved(storage).session;
     expect(saved).toMatchObject({ step: 'feedback', locked: true });
@@ -102,7 +105,7 @@ describe('T-FLOW-1: a Pass ends the run', () => {
 
 describe('T-FLOW-2: otherwise, one revision', () => {
   it('leaves the run open and leads to the revision', async () => {
-    const { storage } = run(async () => ({ ok: true, result: asResult(reworkReply()) }));
+    const { storage } = run(reviewCall(reworkReply()));
     await upload();
     expect(loadSaved(storage).session).toMatchObject({ step: 'feedback', locked: false, endedAt: null });
     expect(screen.getByText(REVISE_NEXT)).toBeTruthy();
@@ -115,13 +118,15 @@ describe('T-REV-4: a review that fails', () => {
   it('keeps the reading, shows the code, and Ask Daniel again reruns only the review', async () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {});
     let fail = true;
-    const { storage, call } = run(async () => (fail
+    const ok = reviewCall(reworkReply());
+    const { storage, call } = run(async (body) => (fail && body.part === 'email'
       ? { ok: false, status: 200, error: 'invalid', errors: ['x'] }
-      : { ok: true, result: asResult(reworkReply()) }));
+      : ok(body)));
     await upload();
     expect(screen.getByRole('alert').textContent).toContain("Daniel's reply didn't come through properly. Try again. (Error code: TS-S04)");
     expect(loadSaved(storage).session.trees).toHaveLength(1);
-    expect(call.mock.calls.filter((c) => c[0] === '/api/review-tree')).toHaveLength(3);
+    // One findings call, then three tries at the email.
+    expect(call.mock.calls.filter((c) => c[0] === '/api/review-tree').map((c) => c[1].part)).toEqual(['findings', 'email', 'email', 'email']);
     fail = false;
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'Ask Daniel again' }));
