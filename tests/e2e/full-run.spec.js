@@ -39,6 +39,8 @@ test('a student runs Tree Surgery from the briefing to the record PDF', async ({
   const calls = [];
   const pageErrors = [];
   page.on('pageerror', (err) => pageErrors.push(err.message));
+  // Under `netlify serve` (E2E_BASE_URL) the real CSP applies: any violation fails the run.
+  page.on('console', (msg) => { if (/Content Security Policy/i.test(msg.text())) pageErrors.push(msg.text()); });
   let kqCalls = 0;
   let reads = 0;
   await page.route('**/api/**', async (route) => {

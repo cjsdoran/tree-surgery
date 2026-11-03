@@ -153,4 +153,4 @@ Run `npm test` (vitest, `tests/unit/`) and `npm run e2e` (Playwright, `tests/e2e
 | T-PIL-1..2 | `pilot-run.test.mjs`, `outline.test.js` (the read-test comparator) |
 | T-E2E-1 | `tests/e2e/full-run.spec.js` |
 
-Not covered by automated tests: the Content Security Policy in `netlify.toml` (the e2e run uses the Vite dev server, which sends no CSP); check on the deploy preview, as Question Time did with `E2E_BASE_URL`.
+The Content Security Policy in `netlify.toml` is covered only when the e2e run targets a server that sends it (the Vite dev server sends none): run it with `E2E_BASE_URL` against `netlify serve` or the deploy preview, and any CSP violation fails T-E2E-1. Passed under `netlify serve` on 3 Nov 2026; repeat on the live site (`docs/deploy.md` step 6).
