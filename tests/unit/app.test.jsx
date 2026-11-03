@@ -51,15 +51,6 @@ describe('app shell', () => {
     const shown = screen.getByTestId('attempt-id').textContent;
     expect(loadSaved(storage).session.attemptId).toBe(shown);
   });
-
-  it('shows a placeholder for steps not built yet', () => {
-    const storage = memoryStorage();
-    saveSession({ ...createSession(), step: 'record' }, storage);
-    render(<App storage={storage} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Resume where you left off' }));
-    expect(screen.getByRole('heading', { name: 'Record' })).toBeTruthy();
-    expect(screen.getByText('This step is not available yet.')).toBeTruthy();
-  });
 });
 
 describe('resume (TS-2)', () => {

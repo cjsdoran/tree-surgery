@@ -5,8 +5,9 @@ import { buildContext, checkTotals, processFile, processPaste } from '../extract
 import { loadPdfjs } from '../extract/loadPdfjs.js';
 import { countWords, formatNumber } from '../extract/text.js';
 
-export const CONFIRM_LABEL =
-  'I confirm this material may be shared with an AI tool. If it comes from a client, I have checked our NDA allows it.';
+import { CONFIRM_LABEL } from '../copy.js';
+
+export { CONFIRM_LABEL };
 
 export function emptyContext() {
   return { confirmedAt: null, items: [], pasteDraft: '' };

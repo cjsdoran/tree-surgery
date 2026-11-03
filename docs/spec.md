@@ -327,6 +327,8 @@ Built in the browser with pdf-lib, A4, Helvetica (QT D12), Question Time's `layo
 5. **Revised tree** and **sign-off** (if any), as 3 and 4.
 6. **Appendix: Daniel's reading of each tree**, the outline exactly as sent to the review, with any transcription notes.
 
+Built in milestone 7 (`src/record/buildRecord.js`, Question Time's layout plus an image method). The header also lists pages Daniel couldn't read (time, round, file, page, reason). A .pptx picture-only slide prints its picture if it was small enough to keep (1.5 MB); other slides print the note. The Record screen offers **Start a new run** (another case) after a confirmation (D18).
+
 Never: prompt text, internal findings, the context text, the slide shapes text. File name: `<COURSE>_TreeSurgery_<Name>_<AttemptID>.pdf`, spaces removed, characters outside A–Z, a–z, 0–9, `_`, `-` stripped.
 
 ## 12. Functions: common rules

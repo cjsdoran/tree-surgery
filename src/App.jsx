@@ -12,6 +12,7 @@ import { ContextScreen } from './screens/ContextScreen.jsx';
 import { KeyQuestionScreen } from './screens/KeyQuestionScreen.jsx';
 import { TreeScreen } from './screens/TreeScreen.jsx';
 import { FeedbackScreen } from './screens/FeedbackScreen.jsx';
+import { RecordScreen } from './screens/RecordScreen.jsx';
 import { NotYetScreen } from './screens/NotYetScreen.jsx';
 import { inboxEmails } from './emails.js';
 import { STEPS } from './steps.js';
@@ -103,7 +104,7 @@ export default function App({ storage = defaultStorage(), screens = {} }) {
 }
 
 // Each later milestone replaces a NotYetScreen with its step's screen.
-function StepScreen({ session, updateSession, screens }) {
+function StepScreen({ session, updateSession, screens, onNewRun }) {
   const props = { session, updateSession };
   switch (session.step) {
     case 'briefing':
@@ -120,6 +121,8 @@ function StepScreen({ session, updateSession, screens }) {
       return <FeedbackScreen {...props} />;
     case 'revision':
       return <TreeScreen {...props} round="revision" deps={screens.tree} />;
+    case 'record':
+      return <RecordScreen {...props} build={screens.buildRecord} save={screens.saveFile} onNewRun={onNewRun} />;
     default:
       return <NotYetScreen step={session.step} />;
   }
