@@ -54,7 +54,7 @@ describe('the sign-off prompt', () => {
     expect(p.text).not.toContain('### Step 4');
     expect(p.text).not.toContain('{{STAGE2_RULES}}');
     expect(p.text.startsWith(loadPrompt('persona').text)).toBe(true);
-    expect(p.version).toBe('sign-off 1.0; stage2 rules 1.2; persona 1.0');
+    expect(p.version).toBe('sign-off 1.0; stage2 rules 1.3; persona 1.0');
   });
 });
 

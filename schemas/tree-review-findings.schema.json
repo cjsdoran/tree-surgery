@@ -27,7 +27,7 @@
     "findings": {
       "description": "Part A, internal: never sent to the browser (TS-5).",
       "type": "array",
-      "maxItems": 30,
+      "maxItems": 12,
       "items": {
         "type": "object",
         "additionalProperties": false,
